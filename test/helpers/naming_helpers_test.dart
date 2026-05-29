@@ -47,11 +47,24 @@ void main() {
       expect(dartTypeForEntity('text', 'name'), equals('String'));
     });
 
-    test('identifyIdField finds the correct ID field', () {
-      expect(identifyIdField({'id': 1, 'name': 'test'}), equals('id'));
-      expect(identifyIdField({'uuid': 'abc', 'name': 'test'}), equals('uuid'));
-      expect(identifyIdField({'_id': 123}), equals('_id'));
-      expect(identifyIdField({'name': 'test'}), equals('id')); // default
+    test('identifyIdField finds the correct ID field based on priority', () {
+      // Priority 1: id
+      expect(identifyIdField({'id': 1, 'uuid': 'abc'}), equals('id'));
+      
+      // Priority 2: uuid (when id is missing)
+      expect(identifyIdField({'uuid': 'abc', '_id': 123}), equals('uuid'));
+      
+      // Priority 3: _id
+      expect(identifyIdField({'_id': 123, 'identifier': 'id1'}), equals('_id'));
+      
+      // Priority 4: identifier
+      expect(identifyIdField({'identifier': 'id1', 'uid': 'u1'}), equals('identifier'));
+      
+      // Priority 5: uid
+      expect(identifyIdField({'uid': 'u1', 'name': 'test'}), equals('uid'));
+
+      // Default case
+      expect(identifyIdField({'name': 'test', 'title': 'hello'}), equals('id'));
     });
   });
 }
