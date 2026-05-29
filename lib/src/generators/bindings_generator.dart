@@ -42,9 +42,9 @@ class BindingGenerator {
       'Delete': 'delete',
     };
 
-    // Detect regular use cases
+    // Detect regular use cases (GetTask, AddTask, etc.)
     for (final entry in useCaseMap.entries) {
-      final pattern = RegExp('Get.lazyPut\\(\\(\\) => ${entry.key}');
+      final pattern = RegExp('Get\\.lazyPut.*=>\\s*${entry.key}', dotAll: true);
       if (pattern.hasMatch(content)) {
         methods.add(entry.value);
       }
