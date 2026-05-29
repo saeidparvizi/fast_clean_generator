@@ -73,14 +73,14 @@ String pluralize(String word) {
 
   final lower = word.toLowerCase();
 
-  // اگر با y تموم بشه و قبلش consonant باشه → ies
+  // If it ends with 'y' preceded by a consonant -> ies
   if (lower.endsWith('y') &&
       lower.length > 1 &&
       !'aeiou'.contains(lower[lower.length - 2])) {
     return '${word.substring(0, word.length - 1)}ies';
   }
 
-  // اگر با s, x, z, ch, sh تموم بشه → es
+  // If it ends with s, x, z, ch, or sh -> es
   if (lower.endsWith('s') ||
       lower.endsWith('x') ||
       lower.endsWith('z') ||
@@ -89,7 +89,7 @@ String pluralize(String word) {
     return '${word}es';
   }
 
-  // پیش‌فرض → s
+  // Default -> s
   return '${word}s';
 }
 
@@ -120,9 +120,9 @@ String toTitleCase(String text) {
       .join(' ');
 }
 
-// شناسایی فیلد ID از JSON schema
+// Identifies the ID field from the JSON schema
 String identifyIdField(Map<String, dynamic> jsonSchema) {
-  // اولویت‌بندی فیلدهای شناسایی
+  // Priority list for ID fields
   final priorityFields = ['id', 'uuid', '_id', 'identifier', 'uid'];
 
   for (final field in priorityFields) {
