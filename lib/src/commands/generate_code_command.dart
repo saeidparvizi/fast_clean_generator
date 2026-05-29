@@ -28,20 +28,20 @@ class GenerateCodeCommand extends Command {
     // ──────────────────────────────────────────────
 
     final jsonOrPath = await _promptInput(
-      'Enter the JSON file path or JSON string (default: tool/model.json): ',
+      'Enter the JSON file path or JSON string',
       required: false,
       defaultValue: 'tool/model.json',
     );
 
     final featureName = await _promptInput(
-      'Enter the feature name (camelCase, e.g., booking): ',
+      'Enter the feature name (camelCase, e.g., booking)',
       validator: (v) => v.isNotEmpty && v == toCamel(v),
       errorMessage: 'Invalid camelCase format. Example: booking',
       required: true,
     );
 
     final rootClass = await _promptInput(
-      'Enter the root class name (PascalCase, e.g., Payment): ',
+      'Enter the root class name (PascalCase, e.g., Payment)',
       validator: (v) => v.isNotEmpty && v == toPascal(v),
       errorMessage: 'Invalid PascalCase format. Example: Payment',
       required: true,
@@ -138,9 +138,9 @@ class GenerateCodeCommand extends Command {
     };
 
     print(
-      TerminalStyle.bold(
-          '\nSelect CRUD methods (comma separated e.g., 1,2,3):'),
+      TerminalStyle.bold('\n🛠️  Select CRUD Methods:'),
     );
+    print('Choose operations to implement (comma separated, e.g., 1,2,3)');
 
     for (final entry in crudOptions.entries) {
       if (entry.key != '0') {
@@ -149,10 +149,10 @@ class GenerateCodeCommand extends Command {
       }
     }
     print('  ${TerminalStyle.info('[0]')} All (Default)');
-    print('  ${TerminalStyle.info('[q]')} Quit/Cancel');
+    print('  ${TerminalStyle.info('[q]')} Quit');
 
     while (true) {
-      stdout.write('Enter numbers: ');
+      stdout.write('  ${TerminalStyle.bold('?')} Selection: ');
       final input = stdin.readLineSync()?.trim() ?? '';
 
       if (input.toLowerCase() == 'q') {
@@ -212,8 +212,8 @@ class GenerateCodeCommand extends Command {
   // Prompt for generation options
   // ──────────────────────────────────────
   GenerateOptions _promptGenerationOptions() {
-    print(TerminalStyle.bold('\n⚙️  Generation Options:'));
-    print('Select components to generate (y/n/a for all, default: y):');
+    print(TerminalStyle.bold('\n⚙️  Generation Components:'));
+    print('Select which components to generate (y: Yes, n: Skip, a: All)');
     print('─────────────────────────────────────');
 
     final optionsMap = <String, bool>{
@@ -233,20 +233,22 @@ class GenerateCodeCommand extends Command {
 
     for (final entry in optionsMap.entries) {
       final key = entry.key;
-      stdout.write('  Generate ${TerminalStyle.info(key)}? [Y/n/a] > ');
+      stdout.write(
+          '  ${TerminalStyle.bold('?')} Generate ${TerminalStyle.info(key)}? [Y/n/a] ');
 
       final answer = stdin.readLineSync()?.toLowerCase().trim();
 
       if (answer == 'a' || answer == 'all') {
         generateAll = true;
-        print(TerminalStyle.info('  ✓ Generating all components.'));
+        print(
+            '    ${TerminalStyle.success('✓')} Generating all remaining components.');
         break;
       } else if (answer == 'n' || answer == 'no') {
         optionsMap[key] = false;
-        print(TerminalStyle.warning('  ✕ Skipped'));
+        print('    ${TerminalStyle.warning('✕')} Skipped');
       } else {
         optionsMap[key] = true;
-        print(TerminalStyle.success('  ✓ Included'));
+        print('    ${TerminalStyle.success('✓')} Included');
       }
     }
 

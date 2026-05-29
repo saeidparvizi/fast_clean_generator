@@ -7,7 +7,8 @@ String generateDeleteDialog({
   required String projectName,
 }) {
   final pascalModel = toPascal(className);
-  final snakeModel = toSnakeFromName(className);
+  final pluralPascal = pluralize(pascalModel);
+  final pluralSnake = toSnakeFromName(pluralPascal);
 
   final buffer = StringBuffer();
 
@@ -15,13 +16,14 @@ String generateDeleteDialog({
   buffer.writeln("import 'package:flutter/material.dart';");
   buffer.writeln("import 'package:get/get.dart';");
   buffer.writeln(
-    "import 'package:$projectName/features/$feature/presentation/controllers/${snakeModel}_controller.dart';",
+    "import 'package:$projectName/features/$feature/presentation/controllers/${pluralSnake}_controller.dart';",
   );
   buffer.writeln();
 
   // Class definition
   buffer.writeln('class Delete${pascalModel}Dialog extends StatelessWidget {');
-  buffer.writeln('  final String id;');
+  buffer.writeln(
+      '  final dynamic id;'); // Use dynamic to handle different ID types
   buffer.writeln('  final String name;');
   buffer.writeln();
   buffer.writeln('  const Delete${pascalModel}Dialog({');
@@ -48,7 +50,7 @@ String generateDeleteDialog({
   buffer.writeln('          ),');
   buffer.writeln('          onPressed: () {');
   buffer.writeln(
-    '            Get.find<${pascalModel}Controller>().delete$pascalModel(id);',
+    '            Get.find<${pluralPascal}Controller>().delete$pascalModel(id);',
   );
   buffer.writeln('            Get.back();');
   buffer.writeln('          },');
@@ -64,7 +66,7 @@ String generateDeleteDialog({
 
   // Helper function
   buffer.writeln(
-    'void showDelete${pascalModel}Dialog(BuildContext context, String id, String name) {',
+    'void showDelete${pascalModel}Dialog(BuildContext context, dynamic id, String name) {',
   );
   buffer.writeln('  showDialog(');
   buffer.writeln('    context: context,');

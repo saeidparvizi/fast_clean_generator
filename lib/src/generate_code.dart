@@ -160,6 +160,22 @@ class GeneratorEngine {
         await writeFile(controllerPath, listController);
         print('Generated: $controllerPath');
       }
+
+      // For single item controller (get/update)
+      if (crudMethods.contains('get') || crudMethods.contains('update')) {
+        final singleController = generateSingleController(
+          className: className,
+          feature: feature,
+          projectName: projectName,
+          crudMethods: crudMethods,
+          jsonSchema: jsonSchema,
+        );
+
+        final singleControllerPath =
+            '$presentationDir/controllers/${snakeClass}_controller.dart';
+        await writeFile(singleControllerPath, singleController);
+        print('Generated: $singleControllerPath');
+      }
     }
 
     // ──────────────────────────────────────────────
@@ -178,6 +194,20 @@ class GeneratorEngine {
             '$presentationDir/pages/${pluralSnake}_screen.dart';
         await writeFile(listPagePath, listPage);
         print('Generated: $listPagePath');
+      }
+
+      if (crudMethods.contains('get')) {
+        final singlePage = generateSingleScreen(
+          className: className,
+          feature: feature,
+          projectName: projectName,
+          crudMethods: crudMethods,
+          jsonSchema: jsonSchema,
+        );
+        final singlePagePath =
+            '$presentationDir/pages/${snakeClass}_screen.dart';
+        await writeFile(singlePagePath, singlePage);
+        print('Generated: $singlePagePath');
       }
 
       if (crudMethods.contains('add')) {

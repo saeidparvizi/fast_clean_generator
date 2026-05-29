@@ -141,7 +141,7 @@ void _writeBaseImports(
 ) {
   buffer.writeln("import 'package:$projectName/core/routes/app_pages.dart';");
   buffer.writeln(
-    "import 'package:$projectName/features/$feature/bindings/${feature}_bindings.dart';",
+    "import 'package:$projectName/features/$feature/presentation/bindings/${feature}_binding.dart';",
   );
 }
 
@@ -185,10 +185,11 @@ List<String> _getNewImports(
   List<String> crudMethods,
 ) {
   final newImports = <String>[];
+  final pluralSnake = pluralize(snakeModel);
 
   final importsToCheck = [
     if (crudMethods.contains('list'))
-      "import 'package:$projectName/features/$feature/presentation/pages/${pluralize(snakeModel)}_screen.dart';",
+      "import 'package:$projectName/features/$feature/presentation/pages/${pluralSnake}_screen.dart';",
     if (crudMethods.contains('get'))
       "import 'package:$projectName/features/$feature/presentation/pages/${snakeModel}_screen.dart';",
     if (crudMethods.contains('add'))
@@ -198,9 +199,9 @@ List<String> _getNewImports(
   ];
 
   for (final import in importsToCheck) {
-    if (!existingImports.any(
-      (existing) => existing.contains(import.split('/').last),
-    )) {
+    // Better check: check the exact file name at the end of the import
+    final fileName = import.split('/').last;
+    if (!existingImports.any((existing) => existing.contains(fileName))) {
       newImports.add(import);
     }
   }

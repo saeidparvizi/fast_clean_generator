@@ -41,7 +41,18 @@ void main() {
           result,
           contains(
               'Get.lazyPut(() => GetTaskUseCase(repository: Get.find<BookingRepositoryImpl>()),);'));
+
+      // Check for both Plural and Singular Controllers
       expect(result, contains('Get.lazyPut(() => TasksController('));
+      expect(result, contains('Get.lazyPut(() => TaskController('));
+      expect(
+          result,
+          contains(
+              "import 'package:test_project/features/booking/presentation/controllers/tasks_controller.dart';"));
+      expect(
+          result,
+          contains(
+              "import 'package:test_project/features/booking/presentation/controllers/task_controller.dart';"));
     });
 
     test('generate should merge with existing methods in file', () async {

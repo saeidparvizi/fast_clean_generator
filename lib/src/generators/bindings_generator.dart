@@ -120,10 +120,16 @@ class BindingGenerator {
     // Use cases
     _generateUseCaseImports(buffer, projectName, feature, model, crudMethods);
 
-    // Controller
+    // Controllers
     buffer.writeln(
       "import 'package:$projectName/features/$feature/presentation/controllers/${snakeModel}s_controller.dart';",
     );
+
+    if (crudMethods.contains('get') || crudMethods.contains('update')) {
+      buffer.writeln(
+        "import 'package:$projectName/features/$feature/presentation/controllers/${snakeModel}_controller.dart';",
+      );
+    }
     buffer.writeln();
   }
 
@@ -310,5 +316,21 @@ class BindingGenerator {
     }
 
     buffer.writeln('    ),);');
+
+    // Singular Controller (for get/update)
+    if (crudMethods.contains('get') || crudMethods.contains('update')) {
+      buffer.writeln('    Get.lazyPut(() => ${pascalModel}Controller(');
+      if (crudMethods.contains('get')) {
+        buffer.writeln(
+          '      get${pascalModel}UseCase: Get.find<Get${pascalModel}UseCase>(),',
+        );
+      }
+      if (crudMethods.contains('update')) {
+        buffer.writeln(
+          '      update${pascalModel}UseCase: Get.find<Update${pascalModel}UseCase>(),',
+        );
+      }
+      buffer.writeln('    ),);');
+    }
   }
 }
