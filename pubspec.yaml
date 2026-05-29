@@ -1,0 +1,22 @@
+name: clean_arch_generator
+description: A powerful code generator for Clean Architecture in Flutter projects
+version: 1.0.0
+homepage: https://github.com/saeidparvizi/clean_arch_generator
+repository: https://github.com/saeidparvizi/clean_arch_generator
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  path: ^1.8.0
+  json_annotation: ^4.8.0
+  args: ^2.4.0
+
+dev_dependencies:
+  lints: ^3.0.0
+  test: ^1.24.0
+  build_runner: ^2.4.0
+  json_serializable: ^6.7.0
+
+executables:
+  clean_arch_generator: clean_arch_generator
