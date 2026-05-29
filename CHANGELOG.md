@@ -1,6 +1,6 @@
 ## 1.0.0
 
-- Initial professional release.
+- Initial professional release as **fast_clean_generator**.
 - Complete Clean Architecture layer generation (Data, Domain, Presentation).
 - Full CRUD support (List, Get, Add, Update, Delete).
 - Integrated GetX state management with plural/singular controller support.

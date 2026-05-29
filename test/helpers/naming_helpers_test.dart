@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:clean_arch_generator/src/helpers/naming_helpers.dart';
+import 'package:fast_clean_generator/src/helpers/naming_helpers.dart';
 
 void main() {
   group('NamingHelpers Tests', () {

@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:clean_arch_generator/src/generators/usecase_generator.dart';
+import 'package:fast_clean_generator/src/generators/usecase_generator.dart';
 
 void main() {
   group('UseCaseGenerator Tests', () {

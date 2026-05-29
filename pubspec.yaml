@@ -1,4 +1,4 @@
-name: clean_arch_generator
+name: fast_clean_generator
 description: A powerful code generator for Clean Architecture in Flutter projects
 version: 1.0.0
 homepage: https://github.com/saeidparvizi/clean_arch_generator
@@ -19,4 +19,5 @@ dev_dependencies:
   json_serializable: ^6.7.0
 
 executables:
-  clean_arch_generator: clean_arch_generator
+  fast_clean_gen: fast_clean_generator
+  fcg: fast_clean_generator

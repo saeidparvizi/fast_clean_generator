@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:clean_arch_generator/src/commands/generate_code_command.dart';
+import 'package:fast_clean_generator/src/commands/generate_code_command.dart';
 
 void main(List<String> args) async {
   final runner = CommandRunner<void>(
-    'clean_arch_generator',
+    'fast_clean_gen',
     'Flutter Clean Architecture Code Generator',
   );
 

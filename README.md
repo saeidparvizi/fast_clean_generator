@@ -1,30 +1,39 @@
-# 🚀 Flutter Clean Architecture Generator
+# 🚀 Fast Clean Generator
 
 A powerful, interactive CLI tool designed to accelerate Flutter development by generating boilerplate code following **Clean Architecture** principles and **GetX** state management.
 
-[![Pub Version](https://img.shields.io/pub/v/clean_arch_generator)](https://pub.dev/packages/clean_arch_generator)
+[![Dart CI](https://github.com/saeidparvizi/clean_arch_generator/actions/workflows/dart.yml/badge.svg)](https://github.com/saeidparvizi/clean_arch_generator/actions/workflows/dart.yml)
+[![Pub Version](https://img.shields.io/pub/v/fast_clean_generator)](https://pub.dev/packages/fast_clean_generator)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
 ## ✨ Features
 
-- 🏗️ **Full Layer Generation**: Automatically creates Domain, Data, and Presentation layers.
+- 🏗️ **Complete Layer Generation**: Automatically creates Domain, Data, and Presentation layers.
+- 🎮 **Smart GetX Integration**: 
+    - Generates **Plural Controllers** for list management.
+    - Generates **Singular Controllers** for item details and editing.
+    - Automatic **Binding** registration and dependency injection.
 - 📦 **CRUD Support**: Choose which operations you need (List, Get, Add, Update, Delete).
-- 🎮 **GetX Integration**: Generates Controllers, Bindings, and Pages pre-configured with GetX.
 - 📝 **JSON to Model**: Converts your JSON schema into robust Entities and Models with `fromJson`/`toJson`.
 - 🛣️ **Smart Routing**: Automatically updates your application routes and pages.
 - 💻 **Interactive CLI**: Friendly prompts to guide you through the feature creation process.
-- 🛠️ **Customizable**: Choose exactly which components to generate (Entities, UseCases, Forms, etc.).
+- ✅ **Enterprise Ready**: Includes comprehensive Unit and Integration tests.
 
 ---
 
 ## 📦 Installation
 
-To use `clean_arch_generator` globally on your machine, run:
+To use `fast_clean_generator` globally on your machine, run:
 
 ```bash
-dart pub global activate clean_arch_generator
+dart pub global activate fast_clean_generator
+```
+
+*(Or if installing directly from GitHub during development)*
+```bash
+dart pub global activate --source git https://github.com/saeidparvizi/clean_arch_generator
 ```
 
 Make sure your `dart` path is configured correctly in your system's environment variables.
@@ -33,11 +42,15 @@ Make sure your `dart` path is configured correctly in your system's environment 
 
 ## 🚀 How to Use
 
-1. Navigate to your Flutter project's root directory.
+1. Go to your Flutter project root.
 2. Run the generator command:
 
 ```bash
-clean_arch_generator generate
+# You can use either the full command or the short alias:
+fast_clean_gen generate
+
+# OR simply:
+fcg generate
 ```
 
 ### 🛠️ Interactive Prompts
@@ -45,7 +58,7 @@ clean_arch_generator generate
 The tool will ask you for:
 - **JSON Input**: Path to a `.json` file or a raw JSON string representing your data model.
 - **Feature Name**: The name of the module (e.g., `booking`, `profile`).
-- **Root Class**: The main class name in PascalCase (e.g., `User`, `Order`).
+- **Root Class**: The main class name in PascalCase (e.g., `Booking`, `User`).
 - **CRUD Selection**: Which operations you want to implement.
 - **Component Selection**: Fine-tune which files (Entities, UseCases, Controllers, etc.) should be generated.
 
@@ -53,24 +66,24 @@ The tool will ask you for:
 
 ## 📂 Generated Structure
 
-The generator follows a standard Clean Architecture structure:
+The tool generates a clean, scalable folder structure:
 
 ```text
 lib/features/your_feature/
 ├── data/
-│   ├── models/
-│   ├── repositories/
-│   └── sources/
+│   ├── data_sources/    # Remote API implementations
+│   ├── models/          # JSON serialization logic
+│   └── repositories/    # Repository implementations
 ├── domain/
-│   ├── entities/
-│   ├── repositories/
-│   └── usecases/
+│   ├── entities/        # Business logic models (Equatable)
+│   ├── repositories/    # Abstract interfaces
+│   └── usecases/        # Single-responsibility logic units
 ├── presentation/
-│   ├── bindings/
-│   ├── controllers/
-│   ├── pages/
-│   └── widgets/
-└── routes/
+│   ├── bindings/        # GetX Dependency Injection
+│   ├── controllers/     # Plural & Singular controllers
+│   ├── pages/           # List, Add, Edit & Detail screens
+│   └── widgets/         # Feature-specific forms & dialogs
+└── routes/              # Local feature routes
 ```
 
 ---
@@ -82,12 +95,21 @@ Save this as `model.json` to test the generator:
 ```json
 {
   "id": 1,
-  "title": "Task Title",
-  "description": "Task Description",
+  "title": "Clean Architecture",
   "is_completed": false,
-  "due_date": "2023-12-31"
+  "priority": "high",
+  "created_at": "2023-12-31"
 }
 ```
+
+---
+
+## ✅ Quality Assurance
+
+This project is built with stability in mind:
+- **Linting**: Strictly follows Dart's recommended analysis options.
+- **Testing**: 35+ Unit and Integration tests covering naming logic, JSON parsing, and code generation.
+- **CI/CD**: Automated GitHub Actions to verify every commit.
 
 ---
 

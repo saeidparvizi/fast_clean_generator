@@ -3,9 +3,9 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:clean_arch_generator/src/generate_code.dart';
-import 'package:clean_arch_generator/src/models/generate_options.dart';
-import 'package:clean_arch_generator/src/exceptions/generator_exception.dart';
+import 'package:fast_clean_generator/src/generate_code.dart';
+import 'package:fast_clean_generator/src/models/generate_options.dart';
+import 'package:fast_clean_generator/src/exceptions/generator_exception.dart';
 import '../helpers/naming_helpers.dart';
 
 class GenerateCodeCommand extends Command {

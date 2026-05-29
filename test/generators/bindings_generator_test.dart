@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:clean_arch_generator/src/generators/bindings_generator.dart';
+import 'package:fast_clean_generator/src/generators/bindings_generator.dart';
 import 'dart:io';
 
 void main() {

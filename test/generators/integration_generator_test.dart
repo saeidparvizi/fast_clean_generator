@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:test/test.dart';
-import 'package:clean_arch_generator/src/generators/remote_data_generator.dart';
-import 'package:clean_arch_generator/src/generators/repository_generator.dart';
-import 'package:clean_arch_generator/src/generators/repository_impl_generator.dart';
-import 'package:clean_arch_generator/src/generators/app_pages_generator.dart';
+import 'package:fast_clean_generator/src/generators/remote_data_generator.dart';
+import 'package:fast_clean_generator/src/generators/repository_generator.dart';
+import 'package:fast_clean_generator/src/generators/repository_impl_generator.dart';
+import 'package:fast_clean_generator/src/generators/app_pages_generator.dart';
 
 void main() {
   group('Integration Generator Tests (File system dependent)', () {

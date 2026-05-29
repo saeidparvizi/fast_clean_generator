@@ -1,4 +1,4 @@
-// test/clean_arch_generator_test.dart
+// test/fast_clean_generator_test.dart
 import 'package:test/test.dart';
 
 void main() {

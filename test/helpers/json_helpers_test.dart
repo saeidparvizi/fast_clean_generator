@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
-import 'package:clean_arch_generator/src/helpers/json_helpers.dart';
-import 'package:clean_arch_generator/src/exceptions/generator_exception.dart';
+import 'package:fast_clean_generator/src/helpers/json_helpers.dart';
+import 'package:fast_clean_generator/src/exceptions/generator_exception.dart';
 
 void main() {
   group('JsonHelpers Tests', () {
