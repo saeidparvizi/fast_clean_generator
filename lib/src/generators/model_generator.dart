@@ -9,11 +9,10 @@ String generateModel({
   required Map<String, String> fileBase,
 }) {
   final baseThis = fileBase[className] ?? toSnakeFromName(className);
-  final entityImport = 'package:$projectName/features/$feature/domain/entities/${baseThis}_entity.dart';
+  final entityImport =
+      'package:$projectName/features/$feature/domain/entities/${baseThis}_entity.dart';
 
-  final b = StringBuffer()
-    ..writeln("import '$entityImport';");
-
+  final b = StringBuffer()..writeln("import '$entityImport';");
 
   final imports = <String>{};
   data.forEach((key, value) {
@@ -22,7 +21,8 @@ String generateModel({
       final nested = toPascal(key);
       final base = fileBase[nested] ?? toSnakeFromKey(key);
 
-      final nestedModelImport = 'package:$projectName/features/$feature/data/models/${base}_model.dart';
+      final nestedModelImport =
+          'package:$projectName/features/$feature/data/models/${base}_model.dart';
       imports.add("import '$nestedModelImport';");
 
       // imports.add("import '${base}_model.dart';");

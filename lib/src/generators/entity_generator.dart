@@ -2,10 +2,10 @@
 import '../helpers/naming_helpers.dart';
 
 String generateEntity(
-    String className,
-    Map<String, dynamic> data,
-    Map<String, String> fileBase,
-    ) {
+  String className,
+  Map<String, dynamic> data,
+  Map<String, String> fileBase,
+) {
   final b = StringBuffer()
     ..writeln("import 'package:equatable/equatable.dart';");
 

@@ -11,7 +11,8 @@ void main() {
       expect(result['name'], equals('Test'));
     });
 
-    test('loadJson should throw JsonSchemaException for invalid JSON string', () {
+    test('loadJson should throw JsonSchemaException for invalid JSON string',
+        () {
       final jsonStr = '{"id": 1, "name": "Test"'; // missing brace
       expect(() => loadJson(jsonStr), throwsA(isA<JsonSchemaException>()));
     });
@@ -23,13 +24,16 @@ void main() {
           'bio': 'hello',
           'address': {'city': 'Tehran'}
         },
-        'tags': [{'id': 101, 'label': 'dart'}]
+        'tags': [
+          {'id': 101, 'label': 'dart'}
+        ]
       };
 
       final out = <String, Map<String, dynamic>>{};
       final fileBase = <String, String>{};
 
-      collectClasses('User', schema, out, fileBase, jsonKeyForThisClass: 'user');
+      collectClasses('User', schema, out, fileBase,
+          jsonKeyForThisClass: 'user');
 
       expect(out.containsKey('User'), isTrue);
       expect(out.containsKey('Profile'), isTrue);

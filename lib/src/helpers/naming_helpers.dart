@@ -110,14 +110,12 @@ String toTitleCase(String text) {
       .split(' ')
       .where((word) => word.isNotEmpty);
 
-  return words
-      .map((word) {
-        if (word.length > 1) {
-          return word[0].toUpperCase() + word.substring(1);
-        }
-        return word.toUpperCase();
-      })
-      .join(' ');
+  return words.map((word) {
+    if (word.length > 1) {
+      return word[0].toUpperCase() + word.substring(1);
+    }
+    return word.toUpperCase();
+  }).join(' ');
 }
 
 // Identifies the ID field from the JSON schema

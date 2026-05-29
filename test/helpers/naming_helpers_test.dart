@@ -39,7 +39,11 @@ void main() {
       expect(dartTypeForEntity(1.5, 'price'), equals('double'));
       expect(dartTypeForEntity(true, 'isActive'), equals('bool'));
       expect(dartTypeForEntity({'key': 'value'}, 'data'), equals('DataEntity'));
-      expect(dartTypeForEntity([{'key': 'value'}], 'list'), equals('List<ListEntity>'));
+      expect(
+          dartTypeForEntity([
+            {'key': 'value'}
+          ], 'list'),
+          equals('List<ListEntity>'));
       expect(dartTypeForEntity('text', 'name'), equals('String'));
     });
 

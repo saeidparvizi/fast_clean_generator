@@ -222,32 +222,28 @@ List<String> _getNewRoutes(
   // Potential routes
   final potentialRoutes = <String, String>{
     if (crudMethods.contains('list'))
-      pluralize(className):
-          '''
+      pluralize(className): '''
   GetPage(
     name: AppRoutes.${pluralize(camelModel)},
     page: () => const ${pluralize(pascalModel)}Screen(),
     binding: ${pascalFeature}Binding(),
   ),''',
     if (crudMethods.contains('get'))
-      className:
-          '''
+      className: '''
   GetPage(
     name: AppRoutes.$camelModel,
     page: () => const ${(pascalModel)}Screen(),
     binding: ${pascalFeature}Binding(),
   ),''',
     if (crudMethods.contains('add'))
-      '${snakeModel}Add':
-          '''
+      '${snakeModel}Add': '''
   GetPage(
     name: AppRoutes.${camelModel}Add,
     page: () => const Add${pascalModel}Screen(),
     binding: ${pascalFeature}Binding(),
   ),''',
     if (crudMethods.contains('update'))
-      '${snakeModel}Edit':
-          '''
+      '${snakeModel}Edit': '''
   GetPage(
     name: AppRoutes.${camelModel}Edit,
     page: () => const Edit${pascalModel}Screen(),

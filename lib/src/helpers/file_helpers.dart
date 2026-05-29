@@ -2,10 +2,10 @@
 import 'dart:io';
 
 Future<void> writeFile(
-    String path,
-    String content, {
-      bool appendIfExists = false,
-    }) async {
+  String path,
+  String content, {
+  bool appendIfExists = false,
+}) async {
   final f = File(path);
   await f.create(recursive: true);
 

@@ -3,8 +3,6 @@ import 'package:test/test.dart';
 
 void main() {
   group('Generator Tests', () {
-    test('Model Generation', () {
-
-    });
+    test('Model Generation', () {});
   });
 }

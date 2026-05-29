@@ -14,12 +14,12 @@ Future<Map<String, dynamic>> loadJson(String arg) async {
       }
       throw JsonSchemaException('Root JSON must be an object.');
     }
-    
+
     final f = File(arg);
     if (!f.existsSync()) {
       throw JsonSchemaException('JSON file not found: $arg');
     }
-    
+
     final text = await f.readAsString();
     final decoded = json.decode(text);
     if (decoded is Map<String, dynamic>) {

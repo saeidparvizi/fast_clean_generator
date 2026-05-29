@@ -20,10 +20,10 @@ Future<void> generateRemoteData({
 
   final dataSourcePath =
       'lib/features/$feature/data/data_sources/${snakeFeature}_remote_data.dart';
-  final modelImport = "import 'package:$projectName/features/$feature/data/models/${snakeClass}_model.dart';";
+  final modelImport =
+      "import 'package:$projectName/features/$feature/data/models/${snakeClass}_model.dart';";
 
-  final abstractClass =
-      '''
+  final abstractClass = '''
 import 'package:get/get.dart';
 import 'package:$projectName/core/data/network/api_provider.dart';
 import 'package:$projectName/core/exceptions/server_exception.dart';
@@ -33,8 +33,7 @@ $modelImport
 abstract class ${pascalFeature}RemoteData {
 ''';
 
-  final implClassHeader =
-      '''
+  final implClassHeader = '''
 class ${pascalFeature}RemoteDataImp implements ${pascalFeature}RemoteData {
 
   ${pascalFeature}RemoteDataImp();
@@ -77,8 +76,7 @@ class ${pascalFeature}RemoteDataImp implements ${pascalFeature}RemoteData {
       case 'get':
         methodName = 'get$pascalClass';
         returnType = 'Future<${pascalClass}Model>';
-        body =
-            '''
+        body = '''
     return apiHelper.handleRequest<${pascalClass}Model>(
       request: () => apiProvider.get('/$snakeFeature/$snakeClass/', data: params),
       onSuccess: (json) => ${pascalClass}Model.fromJson(json),
@@ -90,8 +88,7 @@ class ${pascalFeature}RemoteDataImp implements ${pascalFeature}RemoteData {
       case 'list':
         methodName = 'get$pluralPascal';
         returnType = 'Future<List<${pascalClass}Model>>';
-        body =
-            '''
+        body = '''
     return apiHelper.handleRequest<List<${pascalClass}Model>>(
       request: () => apiProvider.get('/$snakeFeature/$snakeClass/', data: params),
       onSuccess: (json) => ${pascalClass}Model.fromJsonList(json as List),
@@ -103,8 +100,7 @@ class ${pascalFeature}RemoteDataImp implements ${pascalFeature}RemoteData {
       case 'add':
         methodName = 'add$pascalClass';
         returnType = 'Future<${pascalClass}Model>';
-        body =
-            '''
+        body = '''
     return apiHelper.handleRequest<${pascalClass}Model>(
       request: () => apiProvider.post('/$snakeFeature/$snakeClass/', data: params),
       onSuccess: (json) => ${pascalClass}Model.fromJson(json),
@@ -116,8 +112,7 @@ class ${pascalFeature}RemoteDataImp implements ${pascalFeature}RemoteData {
       case 'update':
         methodName = 'update$pascalClass';
         returnType = 'Future<${pascalClass}Model>';
-        body =
-            '''
+        body = '''
     return apiHelper.handleRequest<${pascalClass}Model>(
       request: () => apiProvider.put('/$snakeFeature/$snakeClass/', data: params),
       onSuccess: (json) => ${pascalClass}Model.fromJson(json),
@@ -129,8 +124,7 @@ class ${pascalFeature}RemoteDataImp implements ${pascalFeature}RemoteData {
       case 'delete':
         methodName = 'delete$pascalClass';
         returnType = 'Future<Map<String, dynamic>>';
-        body =
-            '''
+        body = '''
     return apiHelper.handleRequest<Map<String, dynamic>>(
       request: () => apiProvider.delete('/$snakeFeature/$snakeClass/',),
       onSuccess: (json) => json,
@@ -173,8 +167,7 @@ class ${pascalFeature}RemoteDataImp implements ${pascalFeature}RemoteData {
     ).firstMatch(src);
     if (implMatch != null) {
       final classEnd = src.lastIndexOf('}');
-      final methodCode =
-          '''
+      final methodCode = '''
   @override
   $returnType $methodName(Map<String, dynamic> params) {
 $body  }
