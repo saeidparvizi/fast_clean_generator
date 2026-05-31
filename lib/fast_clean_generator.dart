@@ -1,6 +1,6 @@
 /// A powerful code generator for Clean Architecture in Flutter projects.
 ///
-/// This library provides the core logic for generating Domain, Data, 
+/// This library provides the core logic for generating Domain, Data,
 /// and Presentation layers based on JSON schemas.
 library fast_clean_generator;
 

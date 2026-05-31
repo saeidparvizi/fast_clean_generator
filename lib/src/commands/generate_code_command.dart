@@ -18,14 +18,21 @@ class GenerateCodeCommand extends Command {
 
   @override
   Future<void> run() async {
-    print(TerminalStyle.bold(r'  _____           _     _____ _                       '));
-    print(TerminalStyle.bold(r' |  ___|         | |   /  __ \ |                      '));
-    print(TerminalStyle.bold(r' | |__  __ _ ___| |_  | /  \/ | ___  __ _ _ __       '));
-    print(TerminalStyle.bold(r' |  __|/ _` / __| __| | |   | |/ _ \/ _` | ' + "'" + r'_ \      '));
-    print(TerminalStyle.bold(r' | |  | (_| \__ \ |_  | \__/\ |  __/ (_| | | | |     '));
-    print(TerminalStyle.bold(r' |_|   \__,_|___/\__|  \____/_|\___|\__,_|_| |_|     '));
+    print(TerminalStyle.bold(
+        r'  _____           _     _____ _                       '));
+    print(TerminalStyle.bold(
+        r' |  ___|         | |   /  __ \ |                      '));
+    print(TerminalStyle.bold(
+        r' | |__  __ _ ___| |_  | /  \/ | ___  __ _ _ __       '));
+    print(TerminalStyle.bold(
+        r' |  __|/ _` / __| __| | |   | |/ _ \/ _` | ' "'" r'_ \      '));
+    print(TerminalStyle.bold(
+        r' | |  | (_| \__ \ |_  | \__/\ |  __/ (_| | | | |     '));
+    print(TerminalStyle.bold(
+        r' |_|   \__,_|___/\__|  \____/_|\___|\__,_|_| |_|     '));
     print('');
-    print(TerminalStyle.bold('   C L E A N   A R C H   G E N E R A T O R  [V1.0.4]'));
+    print(TerminalStyle.bold(
+        '   C L E A N   A R C H   G E N E R A T O R  [V1.0.4]'));
     print('');
 
     // ──────────────────────────────────────────────
@@ -124,7 +131,7 @@ class GenerateCodeCommand extends Command {
         String fullInput = input;
         int balance = _countBraces(input);
         while (balance > 0) {
-          String? nextLine = stdin.readLineSync();
+          final String? nextLine = stdin.readLineSync();
           if (nextLine == null) break;
           fullInput += '\n$nextLine';
           balance += _countBraces(nextLine);

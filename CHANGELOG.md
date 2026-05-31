@@ -1,3 +1,19 @@
+## 1.0.4
+
+- Added a professional ASCII logo on startup.
+- Enhanced JSON input handling to support multiline pasting directly in the terminal.
+
+## 1.0.3
+
+- Update default JSON path from `tool/model.json` to `tool/schema.json` for better professional convention.
+- Sync example directory with new `schema.json` naming.
+
+## 1.0.2
+
+- Add documentation comments (Dartdoc) to public API.
+- Add an example directory with a sample JSON schema.
+- Improve package score on pub.dev.
+
 ## 1.0.1
 
 - Fix repository URL mismatch in pubspec.yaml.

@@ -29,7 +29,7 @@ class GeneratorEngine {
 
   /// Main entry point for code generation logic.
   ///
-  /// Takes a [jsonOrPath], [rootClass] name, [feature] name, 
+  /// Takes a [jsonOrPath], [rootClass] name, [feature] name,
   /// and [crudMethods] to generate the full layer structure.
   Future<void> generate({
     required String jsonOrPath,
