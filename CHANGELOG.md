@@ -1,3 +1,8 @@
+## 1.0.1
+
+- Fix repository URL mismatch in pubspec.yaml.
+- Update documentation and meta information.
+
 ## 1.0.0
 
 - Initial professional release as **fast_clean_generator**.

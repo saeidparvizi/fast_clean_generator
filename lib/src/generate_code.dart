@@ -21,11 +21,16 @@ import 'generators/usecase_generator.dart';
 import 'generators/generate_app_routes.dart';
 
 /// The core engine responsible for generating code based on provided options.
+///
+/// Use this class to programmatically trigger the code generation process.
 class GeneratorEngine {
   /// Global project name (detected once)
   late String projectName;
 
   /// Main entry point for code generation logic.
+  ///
+  /// Takes a [jsonOrPath], [rootClass] name, [feature] name, 
+  /// and [crudMethods] to generate the full layer structure.
   Future<void> generate({
     required String jsonOrPath,
     required String rootClass,

@@ -18,9 +18,14 @@ class GenerateCodeCommand extends Command {
 
   @override
   Future<void> run() async {
-    print(TerminalStyle.bold('╔══════════════════════════════════════╗'));
-    print(TerminalStyle.bold('║     Flutter Clean Arch Generator     ║'));
-    print(TerminalStyle.bold('╚══════════════════════════════════════╝'));
+    print(TerminalStyle.bold(r'  _____           _     _____ _                       '));
+    print(TerminalStyle.bold(r' |  ___|         | |   /  __ \ |                      '));
+    print(TerminalStyle.bold(r' | |__  __ _ ___| |_  | /  \/ | ___  __ _ _ __       '));
+    print(TerminalStyle.bold(r' |  __|/ _` / __| __| | |   | |/ _ \/ _` | ' + "'" + r'_ \      '));
+    print(TerminalStyle.bold(r' | |  | (_| \__ \ |_  | \__/\ |  __/ (_| | | | |     '));
+    print(TerminalStyle.bold(r' |_|   \__,_|___/\__|  \____/_|\___|\__,_|_| |_|     '));
+    print('');
+    print(TerminalStyle.bold('   C L E A N   A R C H   G E N E R A T O R  [V1.0.4]'));
     print('');
 
     // ──────────────────────────────────────────────
@@ -30,7 +35,7 @@ class GenerateCodeCommand extends Command {
     final jsonOrPath = await _promptInput(
       'Enter the JSON file path or JSON string',
       required: false,
-      defaultValue: 'tool/model.json',
+      defaultValue: 'tool/schema.json',
     );
 
     final featureName = await _promptInput(
@@ -100,7 +105,7 @@ class GenerateCodeCommand extends Command {
           : '';
 
       stdout.write('${TerminalStyle.bold('?')} $prompt$defaultText: ');
-      final input = stdin.readLineSync();
+      String? input = stdin.readLineSync();
 
       if (input == null || input.isEmpty) {
         if (defaultValue != null) {
@@ -114,6 +119,19 @@ class GenerateCodeCommand extends Command {
         return '';
       }
 
+      // Handle multiline JSON paste
+      if (input.trim().startsWith('{') && !input.trim().endsWith('}')) {
+        String fullInput = input;
+        int balance = _countBraces(input);
+        while (balance > 0) {
+          String? nextLine = stdin.readLineSync();
+          if (nextLine == null) break;
+          fullInput += '\n$nextLine';
+          balance += _countBraces(nextLine);
+        }
+        input = fullInput;
+      }
+
       if (validator != null && !validator(input)) {
         print(TerminalStyle.error('✕ $errorMessage'));
         continue;
@@ -121,6 +139,15 @@ class GenerateCodeCommand extends Command {
 
       return input;
     }
+  }
+
+  int _countBraces(String s) {
+    int count = 0;
+    for (int i = 0; i < s.length; i++) {
+      if (s[i] == '{') count++;
+      if (s[i] == '}') count--;
+    }
+    return count;
   }
 
   // ──────────────────────────────────────
