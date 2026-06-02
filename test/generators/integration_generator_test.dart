@@ -135,23 +135,33 @@ void main() {
       );
 
       // Verify Entity files
-      expect(File('lib/features/order/domain/entities/cart_entity.dart').existsSync(), isTrue);
-      expect(File('lib/features/order/domain/entities/payment_entity.dart').existsSync(), isTrue);
+      expect(
+          File('lib/features/order/domain/entities/cart_entity.dart')
+              .existsSync(),
+          isTrue);
+      expect(
+          File('lib/features/order/domain/entities/payment_entity.dart')
+              .existsSync(),
+          isTrue);
 
       // Verify Binding merge
-      final bindingContent = File('lib/features/order/presentation/bindings/order_binding.dart').readAsStringSync();
+      final bindingContent =
+          File('lib/features/order/presentation/bindings/order_binding.dart')
+              .readAsStringSync();
       expect(bindingContent, contains('CartsUseCase'));
       expect(bindingContent, contains('PaymentsUseCase'));
 
       // Verify Routes merge
-      final routesContent = File('lib/features/order/routes/order_routes.dart').readAsStringSync();
+      final routesContent = File('lib/features/order/routes/order_routes.dart')
+          .readAsStringSync();
       expect(routesContent, contains('AppRoutes.carts'));
       expect(routesContent, contains('AppRoutes.payments'));
 
       // Verify Core AppPages merge
-      final appPagesContent = File('lib/core/routes/app_pages.dart').readAsStringSync();
+      final appPagesContent =
+          File('lib/core/routes/app_pages.dart').readAsStringSync();
       expect(appPagesContent, contains('...orderRoutes'));
-      
+
       // 3. Add a different feature
       await engine.generate(
         jsonOrPath: '{"id": 1}',
@@ -160,8 +170,9 @@ void main() {
         crudMethods: ['get'],
         options: options,
       );
-      
-      final finalAppPagesContent = File('lib/core/routes/app_pages.dart').readAsStringSync();
+
+      final finalAppPagesContent =
+          File('lib/core/routes/app_pages.dart').readAsStringSync();
       expect(finalAppPagesContent, contains('...orderRoutes'));
       expect(finalAppPagesContent, contains('...authRoutes'));
     });

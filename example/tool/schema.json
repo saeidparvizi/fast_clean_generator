@@ -1,0 +1,8 @@
+{
+  "id": 1,
+  "title": "Complete Clean Architecture Project",
+  "description": "Generate all layers using fast_clean_generator",
+  "is_completed": false,
+  "priority": "high",
+  "due_date": "2024-12-31"
+}
