@@ -1,3 +1,11 @@
+## 1.0.5
+
+- **Fixed Critical Re-generation Bug**: Bindings and Controllers now correctly merge new parameters and methods without breaking syntax or losing existing code.
+- **Smart Primitive List Handling**: Automatically detects and handles lists of basic types (`List<String>`, `List<int>`, etc.) in Entities and Models.
+- **Enhanced Code Injection**: Added a more robust Regex-based engine for injecting code into existing files, ensuring all closing braces and parentheses are preserved.
+- **Improved Testing**: Added more than 8 new integration tests covering complex incremental generation scenarios.
+- **Clean Architecture Refinement**: Removed unused date-string detection logic to keep the core lean and standard-compliant.
+
 ## 1.0.4
 
 - Added a professional ASCII logo on startup.
