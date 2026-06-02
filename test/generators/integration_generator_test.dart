@@ -176,5 +176,99 @@ void main() {
       expect(finalAppPagesContent, contains('...orderRoutes'));
       expect(finalAppPagesContent, contains('...authRoutes'));
     });
+
+    test('Incremental CRUD: Verify all layers keep old methods', () async {
+      final engine = GeneratorEngine();
+      final options = GenerateOptions();
+      const feature = 'order';
+      const className = 'Cart';
+
+      // 1. First run: Only 'list'
+      await engine.generate(
+        jsonOrPath: '{"id": 1, "total": 10.0}',
+        rootClass: className,
+        feature: feature,
+        crudMethods: ['list'],
+        options: options,
+      );
+
+      final repoPath =
+          'lib/features/order/domain/repositories/order_repository.dart';
+      final repoImplPath =
+          'lib/features/order/data/repositories/order_repository_impl.dart';
+      final remoteDataPath =
+          'lib/features/order/data/data_sources/order_remote_data.dart';
+
+      expect(File(repoPath).readAsStringSync(), contains('getCarts'));
+      expect(File(repoImplPath).readAsStringSync(), contains('getCarts'));
+      expect(File(remoteDataPath).readAsStringSync(), contains('getCarts'));
+
+      // 2. Second run: Add 'get' method
+      await engine.generate(
+        jsonOrPath: '{"id": 1, "total": 10.0}',
+        rootClass: className,
+        feature: feature,
+        crudMethods: ['get'],
+        options: options,
+      );
+
+      final updatedRepo = File(repoPath).readAsStringSync();
+      final updatedRepoImpl = File(repoImplPath).readAsStringSync();
+      final updatedRemoteData = File(remoteDataPath).readAsStringSync();
+
+      // Verify BOTH methods exist in all layers
+      expect(updatedRepo, contains('getCarts'),
+          reason: 'Repository should keep getCarts');
+      expect(updatedRepo, contains('getCart'),
+          reason: 'Repository should add getCart');
+
+      expect(updatedRepoImpl, contains('getCarts'),
+          reason: 'RepositoryImpl should keep getCarts');
+      expect(updatedRepoImpl, contains('getCart'),
+          reason: 'RepositoryImpl should add getCart');
+
+      expect(updatedRemoteData, contains('getCarts'),
+          reason: 'RemoteData should keep getCarts');
+      expect(updatedRemoteData, contains('getCart'),
+          reason: 'RemoteData should add getCart');
+    });
+
+    test('Incremental CRUD: Adding "add" method to an existing "list" feature',
+        () async {
+      final engine = GeneratorEngine();
+      final options = GenerateOptions();
+
+      // 1. First run: Only 'list'
+      await engine.generate(
+        jsonOrPath: '{"id": 1, "name": "Task"}',
+        rootClass: 'Task',
+        feature: 'todo',
+        crudMethods: ['list'],
+        options: options,
+      );
+
+      final controllerPath =
+          'lib/features/todo/presentation/controllers/tasks_controller.dart';
+      final initialContent = File(controllerPath).readAsStringSync();
+      expect(initialContent, contains('Future<void> getTasks()'));
+      expect(initialContent, isNot(contains('Future<void> addTask')));
+
+      // 2. Second run: Add 'add' method
+      await engine.generate(
+        jsonOrPath: '{"id": 1, "name": "Task"}',
+        rootClass: 'Task',
+        feature: 'todo',
+        crudMethods: ['add'],
+        options: options,
+      );
+
+      final updatedContent = File(controllerPath).readAsStringSync();
+
+      // CRITICAL CHECK: Does it have BOTH methods?
+      expect(updatedContent, contains('Future<void> getTasks()'),
+          reason: 'Should NOT delete existing list method');
+      expect(updatedContent, contains('Future<void> addTask'),
+          reason: 'Should ADD the new add method');
+    });
   });
 }

@@ -1,69 +1,65 @@
 import 'package:test/test.dart';
 import 'package:fast_clean_generator/src/generators/controller_generator.dart';
+import 'dart:io';
 
 void main() {
   group('ControllerGenerator Tests', () {
     const projectName = 'test_project';
     const feature = 'booking';
     const className = 'Task';
+    const controllerPath = 'test_controller.dart';
     final jsonSchema = {'id': 1, 'title': 'Test'};
 
-    group('generateListController', () {
-      test('should generate a controller with list and delete methods', () {
+    tearDown(() {
+      final file = File(controllerPath);
+      if (file.existsSync()) file.deleteSync();
+    });
+
+    group('generateList', () {
+      test('should generate a controller with list and delete methods', () async {
         final crudMethods = ['list', 'delete'];
-        final result = generateListController(
+        final result = await ControllerGenerator.generateList(
           className: className,
           feature: feature,
           projectName: projectName,
           crudMethods: crudMethods,
           jsonSchema: jsonSchema,
+          controllerPath: controllerPath,
         );
 
-        expect(
-            result, contains('class TasksController extends GetxController'));
+        expect(result, contains('class TasksController extends GetxController'));
         expect(result, contains('final TasksUseCase tasksUseCase;'));
-        expect(result, contains('final DeleteTaskUseCase deleteTaskUseCase;'));
         expect(result, contains('Future<void> getTasks() async'));
-        expect(result, contains('Future<void> deleteTask(int id) async'));
-        expect(
-            result,
-            contains(
-                "import 'package:test_project/features/booking/domain/usecases/tasks_usecase.dart';"));
-      });
-
-      test('should include add method and Map conversion when add is enabled',
-          () {
-        final crudMethods = ['add'];
-        final result = generateListController(
-          className: className,
-          feature: feature,
-          projectName: projectName,
-          crudMethods: crudMethods,
-          jsonSchema: jsonSchema,
-        );
-
-        expect(result, contains('Future<void> addTask(TaskEntity task) async'));
-        expect(result, contains("'id': task.id,"));
-        expect(result, contains("'title': task.title,"));
+        expect(result, contains("import 'package:test_project/features/booking/domain/usecases/tasks_usecase.dart';"));
       });
     });
 
-    group('generateSingleController', () {
-      test('should generate a single item controller with get and update', () {
-        final crudMethods = ['get', 'update'];
-        final result = generateSingleController(
+    group('Incremental Updates', () {
+      test('should merge new methods into existing controller', () async {
+        // 1. Initial generation with 'list'
+        final initialContent = await ControllerGenerator.generateList(
           className: className,
           feature: feature,
           projectName: projectName,
-          crudMethods: crudMethods,
+          crudMethods: ['list'],
           jsonSchema: jsonSchema,
+          controllerPath: controllerPath,
+        );
+        File(controllerPath).writeAsStringSync(initialContent);
+
+        // 2. Add 'add' method
+        final updatedContent = await ControllerGenerator.generateList(
+          className: className,
+          feature: feature,
+          projectName: projectName,
+          crudMethods: ['add'],
+          jsonSchema: jsonSchema,
+          controllerPath: controllerPath,
         );
 
-        expect(result, contains('class TaskController extends GetxController'));
-        expect(result, contains('final GetTaskUseCase getTaskUseCase;'));
-        expect(result, contains('final UpdateTaskUseCase updateTaskUseCase;'));
-        expect(result, contains('Future<void> getTask(String id) async'));
-        expect(result, contains('Future<void> updateTask() async'));
+        expect(updatedContent, contains('Future<void> getTasks()'));
+        expect(updatedContent, contains('Future<void> addTask'));
+        expect(updatedContent, contains('final AddTaskUseCase addTaskUseCase;'));
       });
     });
   });

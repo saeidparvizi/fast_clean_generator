@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'models/generate_options.dart';
 import 'helpers/file_helpers.dart';
 import 'helpers/json_helpers.dart';
@@ -150,36 +152,45 @@ class GeneratorEngine {
     // 7. Controller (GetX)
     // ──────────────────────────────────────────────
     if (options.generateController) {
-      // For list screen controller
-      if (crudMethods.contains('list')) {
-        final listController = generateListController(
+      // For list screen controller (handles list, add, update, delete)
+      final listControllerPath =
+          '$presentationDir/controllers/${pluralSnake}_controller.dart';
+
+      if (crudMethods.contains('list') ||
+          crudMethods.contains('add') ||
+          crudMethods.contains('delete') ||
+          File(listControllerPath).existsSync()) {
+        final listController = await ControllerGenerator.generateList(
           className: className,
           feature: feature,
           projectName: projectName,
           crudMethods: crudMethods,
           jsonSchema: jsonSchema,
+          controllerPath: listControllerPath,
         );
 
-        final controllerPath =
-            '$presentationDir/controllers/${pluralSnake}_controller.dart';
-        await writeFile(controllerPath, listController);
-        print('Generated: $controllerPath');
+        await writeFile(listControllerPath, listController);
+        print('Generated/Updated: $listControllerPath');
       }
 
       // For single item controller (get/update)
-      if (crudMethods.contains('get') || crudMethods.contains('update')) {
-        final singleController = generateSingleController(
+      final singleControllerPath =
+          '$presentationDir/controllers/${snakeClass}_controller.dart';
+
+      if (crudMethods.contains('get') ||
+          crudMethods.contains('update') ||
+          File(singleControllerPath).existsSync()) {
+        final singleController = await ControllerGenerator.generateSingle(
           className: className,
           feature: feature,
           projectName: projectName,
           crudMethods: crudMethods,
           jsonSchema: jsonSchema,
+          controllerPath: singleControllerPath,
         );
 
-        final singleControllerPath =
-            '$presentationDir/controllers/${snakeClass}_controller.dart';
         await writeFile(singleControllerPath, singleController);
-        print('Generated: $singleControllerPath');
+        print('Generated/Updated: $singleControllerPath');
       }
     }
 
