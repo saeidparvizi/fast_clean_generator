@@ -99,6 +99,30 @@ void main() {
           contains(
               "tags: (json['tags'] as List?)?.map((e) => TagsModel.fromJson(e)).toList(),"));
     });
+
+    test('generateModel recursive toJson for nested objects', () {
+      final data = {
+        'id': 1,
+        'author': {'name': 'Saeid'},
+        'comments': [
+          {'id': 1, 'text': 'nice'}
+        ]
+      };
+
+      final result = generateModel(
+        className: 'Post',
+        feature: feature,
+        projectName: projectName,
+        data: data,
+        fileBase: {},
+      );
+
+      // Verify toJson calls for children
+      expect(result, contains("'author': author?.toJson(),"));
+      expect(result,
+          contains("'comments': comments?.map((e) => e.toJson()).toList(),"));
+    });
+
     test('generateModel handles fields correctly', () {
       final data = {
         'id': 1,

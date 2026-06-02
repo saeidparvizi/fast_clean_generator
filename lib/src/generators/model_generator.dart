@@ -73,9 +73,15 @@ String generateModel({
 
   b.writeln('  Map<String, dynamic> toJson() {');
   b.writeln('    return {');
-  data.forEach((key, _) {
+  data.forEach((key, value) {
     final camel = toCamel(key);
-    b.writeln("      '$key': $camel,");
+    if (value is Map) {
+      b.writeln("      '$key': $camel?.toJson(),");
+    } else if (value is List && value.isNotEmpty && value.first is Map) {
+      b.writeln("      '$key': $camel?.map((e) => e.toJson()).toList(),");
+    } else {
+      b.writeln("      '$key': $camel,");
+    }
   });
   b.writeln('    };');
   b.writeln('  }\n');
