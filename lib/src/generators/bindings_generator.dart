@@ -13,323 +13,197 @@ class BindingGenerator {
     required List<String> newCrudMethods,
     required String bindingFilePath,
   }) async {
-    final existingMethods = await _extractExistingCrudMethods(bindingFilePath);
-    final allMethods = _mergeCrudMethods(existingMethods, newCrudMethods);
-
-    return _generateBindingContent(
-      projectName: projectName,
-      feature: feature,
-      model: model,
-      crudMethods: allMethods,
-    );
-  }
-
-  static Future<List<String>> _extractExistingCrudMethods(
-    String filePath,
-  ) async {
-    final file = File(filePath);
-    if (!file.existsSync()) {
-      return [];
+    final file = File(bindingFilePath);
+    String existingContent = '';
+    if (file.existsSync()) {
+      existingContent = await file.readAsString();
     }
 
-    final content = await file.readAsString();
-    final methods = <String>[];
+    if (existingContent.isEmpty) {
+      return _generateNewBinding(projectName, feature, model, newCrudMethods);
+    }
 
-    final useCaseMap = {
-      'Get': 'get',
-      'Add': 'add',
-      'Update': 'update',
-      'Delete': 'delete',
-    };
+    return _updateExistingBinding(existingContent, projectName, feature, model, newCrudMethods);
+  }
 
-    // Detect regular use cases (GetTask, AddTask, etc.)
-    for (final entry in useCaseMap.entries) {
-      final pattern = RegExp('Get\\.lazyPut.*=>\\s*${entry.key}', dotAll: true);
-      if (pattern.hasMatch(content)) {
-        methods.add(entry.value);
+  static String _generateNewBinding(
+    String projectName,
+    String feature,
+    String model,
+    List<String> crudMethods,
+  ) {
+    final buffer = StringBuffer();
+    _writeHeader(buffer, projectName, feature);
+    _writeModelSpecificImports(buffer, projectName, feature, model, crudMethods);
+    
+    final pascalFeature = toPascal(feature);
+    buffer.writeln('\nclass ${pascalFeature}Binding extends Bindings {');
+    buffer.writeln('  @override');
+    buffer.writeln('  void dependencies() {');
+    
+    // Core Dependencies (only once)
+    buffer.writeln('    // Data Sources');
+    buffer.writeln('    Get.lazyPut(() => ${pascalFeature}RemoteDataImp());\n');
+    buffer.writeln('    // Repositories');
+    buffer.writeln('    Get.lazyPut(');
+    buffer.writeln('      () => ${pascalFeature}RepositoryImpl(');
+    buffer.writeln('        remoteData: Get.find<${pascalFeature}RemoteDataImp>(),');
+    buffer.writeln('        executor: Get.find<RepositoryExecutor>(),),');
+    buffer.writeln('    );\n');
+
+    _writeModelDependencies(buffer, feature, model, crudMethods);
+
+    buffer.writeln('  }');
+    buffer.writeln('}');
+    return buffer.toString();
+  }
+
+  static String _updateExistingBinding(
+    String content,
+    String projectName,
+    String feature,
+    String model,
+    List<String> crudMethods,
+  ) {
+    final lines = content.split('\n');
+    final resultLines = <String>[];
+    
+    // 1. Manage Imports
+    final existingImports = <String>{};
+    int lastImportIndex = -1;
+    for (int i = 0; i < lines.length; i++) {
+      if (lines[i].trim().startsWith('import ')) {
+        existingImports.add(lines[i].trim());
+        lastImportIndex = i;
+      }
+      resultLines.add(lines[i]);
+    }
+
+    final newImports = _getModelImports(projectName, feature, model, crudMethods);
+    int addedImportsCount = 0;
+    for (final imp in newImports) {
+      if (!existingImports.contains(imp)) {
+        resultLines.insert(lastImportIndex + 1 + addedImportsCount, imp);
+        addedImportsCount++;
       }
     }
 
-    // Detect list use cases (plural)
-    final listPattern = RegExp(r'Get\.lazyPut\(\(\) => (\w+)UseCase');
-    final listMatches = listPattern.allMatches(content);
-    for (final match in listMatches) {
-      final className = match.group(1) ?? '';
-      // If class name starts with uppercase and ends with 's' (plural)
-      if (className.length > 1 &&
-          className[0] == className[0].toUpperCase() &&
-          className.endsWith('s') &&
-          !useCaseMap.keys.any((key) => className.startsWith(key))) {
-        methods.add('list');
+    // 2. Manage dependencies block
+    int depStartIndex = -1;
+    int depEndIndex = -1;
+    for (int i = 0; i < resultLines.length; i++) {
+      if (resultLines[i].contains('void dependencies()')) {
+        depStartIndex = i;
+      }
+      if (depStartIndex != -1 && resultLines[i].trim() == '}') {
+        depEndIndex = i;
         break;
       }
     }
 
-    return methods.toSet().toList();
+    if (depStartIndex != -1 && depEndIndex != -1) {
+      final depBlock = resultLines.sublist(depStartIndex, depEndIndex).join('\n');
+      final newDepsBuffer = StringBuffer();
+      _writeModelDependencies(newDepsBuffer, feature, model, crudMethods);
+      
+      // Filter out lines already present in the block
+      final newLines = newDepsBuffer.toString().split('\n');
+      final linesToInsert = <String>[];
+      for (final line in newLines) {
+        final trimmed = line.trim();
+        if (trimmed.isNotEmpty && !depBlock.contains(trimmed)) {
+          linesToInsert.add('    $trimmed');
+        }
+      }
+      
+      if (linesToInsert.isNotEmpty) {
+        resultLines.insertAll(depEndIndex, linesToInsert);
+      }
+    }
+
+    return resultLines.join('\n');
   }
 
-  static List<String> _mergeCrudMethods(
-    List<String> existing,
-    List<String> newMethods,
-  ) {
-    final merged = {...existing, ...newMethods};
-    return merged.toList();
-  }
-
-  static String _generateBindingContent({
-    required String projectName,
-    required String feature,
-    required String model,
-    required List<String> crudMethods,
-  }) {
-    final buffer = StringBuffer();
-
-    _generateImports(buffer, projectName, feature, model, crudMethods);
-    _generateBindingClass(buffer, projectName, feature, model, crudMethods);
-
-    return buffer.toString();
-  }
-
-  static void _generateImports(
-    StringBuffer buffer,
-    String projectName,
-    String feature,
-    String model,
-    List<String> crudMethods,
-  ) {
-    final snakeModel = toSnakeFromName(model);
-
+  static void _writeHeader(StringBuffer buffer, String projectName, String feature) {
     buffer.writeln("import 'package:get/get.dart';");
-    buffer.writeln(
-      "import 'package:$projectName/core/utils/repository_executor.dart';",
-    );
-
-    // Data sources
-    buffer.writeln(
-      "import 'package:$projectName/features/$feature/data/data_sources/${feature}_remote_data.dart';",
-    );
-
-    // Repositories
-    buffer.writeln(
-      "import 'package:$projectName/features/$feature/data/repositories/${feature}_repository_impl.dart';",
-    );
-    buffer.writeln(
-      "import 'package:$projectName/features/$feature/domain/repositories/${feature}_repository.dart';",
-    );
-
-    // Use cases
-    _generateUseCaseImports(buffer, projectName, feature, model, crudMethods);
-
-    // Controllers
-    buffer.writeln(
-      "import 'package:$projectName/features/$feature/presentation/controllers/${snakeModel}s_controller.dart';",
-    );
-
-    if (crudMethods.contains('get') || crudMethods.contains('update')) {
-      buffer.writeln(
-        "import 'package:$projectName/features/$feature/presentation/controllers/${snakeModel}_controller.dart';",
-      );
-    }
-    buffer.writeln();
+    buffer.writeln("import 'package:$projectName/core/utils/repository_executor.dart';");
+    buffer.writeln("import 'package:$projectName/features/$feature/data/data_sources/${feature}_remote_data.dart';");
+    buffer.writeln("import 'package:$projectName/features/$feature/data/repositories/${feature}_repository_impl.dart';");
+    buffer.writeln("import 'package:$projectName/features/$feature/domain/repositories/${feature}_repository.dart';");
   }
 
-  static void _generateUseCaseImports(
-    StringBuffer buffer,
-    String projectName,
-    String feature,
-    String model,
-    List<String> crudMethods,
-  ) {
-    final pascalModel = toPascal(model);
+  static List<String> _getModelImports(String projectName, String feature, String model, List<String> crudMethods) {
     final snakeModel = toSnakeFromName(model);
-    final pluralPascalModel = pluralize(pascalModel);
-    final pluralSnakeModel = toSnakeFromName(pluralPascalModel);
+    final pascalModel = toPascal(model);
+    final pluralSnake = toSnakeFromName(pluralize(model));
+    
+    final imports = [
+      "import 'package:$projectName/features/$feature/presentation/controllers/${snakeModel}s_controller.dart';",
+      if (crudMethods.contains('get') || crudMethods.contains('update'))
+        "import 'package:$projectName/features/$feature/presentation/controllers/${snakeModel}_controller.dart';",
+    ];
 
-    final useCaseMap = {
-      'get': {
-        'file': 'get_${snakeModel}_usecase.dart',
-        'class': 'Get${pascalModel}UseCase',
-      },
-      'list': {
-        'file': '${pluralSnakeModel}_usecase.dart',
-        'class': '${pluralPascalModel}UseCase',
-      },
-      'add': {
-        'file': 'add_${snakeModel}_usecase.dart',
-        'class': 'Add${pascalModel}UseCase',
-      },
-      'update': {
-        'file': 'update_${snakeModel}_usecase.dart',
-        'class': 'Update${pascalModel}UseCase',
-      },
-      'delete': {
-        'file': 'delete_${snakeModel}_usecase.dart',
-        'class': 'Delete${pascalModel}UseCase',
-      },
-    };
+    if (crudMethods.contains('list')) {
+      imports.add("import 'package:$projectName/features/$feature/domain/usecases/${pluralSnake}_usecase.dart';");
+    }
+    if (crudMethods.contains('get')) {
+      imports.add("import 'package:$projectName/features/$feature/domain/usecases/get_${snakeModel}_usecase.dart';");
+    }
+    if (crudMethods.contains('add')) {
+      imports.add("import 'package:$projectName/features/$feature/domain/usecases/add_${snakeModel}_usecase.dart';");
+    }
+    if (crudMethods.contains('update')) {
+      imports.add("import 'package:$projectName/features/$feature/domain/usecases/update_${snakeModel}_usecase.dart';");
+    }
+    if (crudMethods.contains('delete')) {
+      imports.add("import 'package:$projectName/features/$feature/domain/usecases/delete_${snakeModel}_usecase.dart';");
+    }
 
-    for (final method in crudMethods) {
-      final methodLower = method.toLowerCase();
-      final useCaseInfo = useCaseMap[methodLower];
+    return imports;
+  }
 
-      if (useCaseInfo != null) {
-        buffer.writeln(
-          "import 'package:$projectName/features/$feature/domain/usecases/${useCaseInfo['file']}';",
-        );
-      }
+  static void _writeModelSpecificImports(StringBuffer buffer, String projectName, String feature, String model, List<String> crudMethods) {
+    final imports = _getModelImports(projectName, feature, model, crudMethods);
+    for (final imp in imports) {
+      buffer.writeln(imp);
     }
   }
 
-  static void _generateBindingClass(
-    StringBuffer buffer,
-    String projectName,
-    String feature,
-    String model,
-    List<String> crudMethods,
-  ) {
-    final pascalFeature = toPascal(feature);
-
-    buffer.writeln('class ${pascalFeature}Binding extends Bindings {');
-    buffer.writeln('  @override');
-    buffer.writeln('  void dependencies() {');
-
-    _generateDependencies(buffer, feature, model, crudMethods);
-
-    buffer.writeln('  }');
-    buffer.writeln('}');
-  }
-
-  static void _generateDependencies(
-    StringBuffer buffer,
-    String feature,
-    String model,
-    List<String> crudMethods,
-  ) {
-    final pascalFeature = toPascal(feature);
-
-    // Remote Data
-    buffer.writeln('    // Data Sources');
-    buffer.writeln('    Get.lazyPut(() => ${pascalFeature}RemoteDataImp());');
-    buffer.writeln();
-
-    // Repository
-    buffer.writeln('    // Repositories');
-    buffer.writeln('    Get.lazyPut(');
-    buffer.writeln(
-      '      () => ${pascalFeature}RepositoryImpl('
-      '\n        remoteData: Get.find<${pascalFeature}RemoteDataImp>(),'
-      '\n        executor: Get.find<RepositoryExecutor>(),),',
-    );
-    buffer.writeln('    );');
-    buffer.writeln();
-
-    // Use Cases
-    _generateUseCaseDependencies(buffer, feature, model, crudMethods);
-    buffer.writeln();
-
-    // Controller
-    _generateControllerDependency(buffer, feature, model, crudMethods);
-  }
-
-  static void _generateUseCaseDependencies(
-    StringBuffer buffer,
-    String feature,
-    String model,
-    List<String> crudMethods,
-  ) {
-    final pascalFeature = toPascal(feature);
+  static void _writeModelDependencies(StringBuffer buffer, String feature, String model, List<String> crudMethods) {
     final pascalModel = toPascal(model);
-    final pluralPascalModel = pluralize(pascalModel);
+    final pluralPascal = pluralize(pascalModel);
+    final pluralCamel = toCamel(pluralPascal);
+    final pascalFeature = toPascal(feature);
 
-    final useCaseMap = {
-      'get': 'Get${pascalModel}UseCase',
-      'list': '${pluralPascalModel}UseCase',
-      'add': 'Add${pascalModel}UseCase',
-      'update': 'Update${pascalModel}UseCase',
-      'delete': 'Delete${pascalModel}UseCase',
-    };
-
-    buffer.writeln('    // Use Cases');
-    for (final method in crudMethods) {
-      final methodLower = method.toLowerCase();
-      final className = useCaseMap[methodLower];
-
-      if (className != null) {
-        buffer.writeln(
-          '    Get.lazyPut(() => $className(repository: Get.find<${pascalFeature}RepositoryImpl>()),);',
-        );
-      }
+    buffer.writeln('    // Use Cases ($pascalModel)');
+    if (crudMethods.contains('list')) {
+      buffer.writeln('    Get.lazyPut(() => ${pluralPascal}UseCase(repository: Get.find<${pascalFeature}RepositoryImpl>()),);');
     }
-  }
+    if (crudMethods.contains('get')) {
+      buffer.writeln('    Get.lazyPut(() => Get${pascalModel}UseCase(repository: Get.find<${pascalFeature}RepositoryImpl>()),);');
+    }
+    if (crudMethods.contains('add')) {
+      buffer.writeln('    Get.lazyPut(() => Add${pascalModel}UseCase(repository: Get.find<${pascalFeature}RepositoryImpl>()),);');
+    }
+    if (crudMethods.contains('update')) {
+      buffer.writeln('    Get.lazyPut(() => Update${pascalModel}UseCase(repository: Get.find<${pascalFeature}RepositoryImpl>()),);');
+    }
+    if (crudMethods.contains('delete')) {
+      buffer.writeln('    Get.lazyPut(() => Delete${pascalModel}UseCase(repository: Get.find<${pascalFeature}RepositoryImpl>()),);');
+    }
 
-  static void _generateControllerDependency(
-    StringBuffer buffer,
-    String feature,
-    String model,
-    List<String> crudMethods,
-  ) {
-    final pascalModel = toPascal(model);
-    final pluralPascalModel = pluralize(pascalModel);
-    final pluralSnakeModel = toSnakeFromName(pluralPascalModel);
-
-    final paramMap = {
-      'get': {
-        'name': 'get${pascalModel}UseCase',
-        'class': 'Get${pascalModel}UseCase',
-      },
-      'list': {
-        'name': '${pluralSnakeModel}UseCase',
-        'class': '${pluralPascalModel}UseCase',
-      },
-      'add': {
-        'name': 'add${pascalModel}UseCase',
-        'class': 'Add${pascalModel}UseCase',
-      },
-      'update': {
-        'name': 'update${pascalModel}UseCase',
-        'class': 'Update${pascalModel}UseCase',
-      },
-      'delete': {
-        'name': 'delete${pascalModel}UseCase',
-        'class': 'Delete${pascalModel}UseCase',
-      },
-    };
-
-    buffer.writeln('    // Controller');
+    buffer.writeln('\n    // Controllers ($pascalModel)');
     buffer.writeln('    Get.lazyPut(() => ${pascalModel}sController(');
-
-    final controllersParams = <String>[];
-    for (final method in crudMethods) {
-      final methodLower = method.toLowerCase();
-      final paramInfo = paramMap[methodLower];
-
-      if (paramInfo != null && method != 'get') {
-        controllersParams.add(
-          '${paramInfo['name']}: Get.find<${paramInfo['class']}>()',
-        );
-      }
-    }
-
-    // Add parameters with beautiful formatting
-    for (int i = 0; i < controllersParams.length; i++) {
-      buffer.writeln('      ${controllersParams[i]},');
-    }
-
+    if (crudMethods.contains('list')) buffer.writeln('      ${pluralCamel}UseCase: Get.find<${pluralPascal}UseCase>(),');
+    if (crudMethods.contains('add')) buffer.writeln('      add${pascalModel}UseCase: Get.find<Add${pascalModel}UseCase>(),');
+    if (crudMethods.contains('update')) buffer.writeln('      update${pascalModel}UseCase: Get.find<Update${pascalModel}UseCase>(),');
+    if (crudMethods.contains('delete')) buffer.writeln('      delete${pascalModel}UseCase: Get.find<Delete${pascalModel}UseCase>(),');
     buffer.writeln('    ),);');
 
-    // Singular Controller (for get/update)
     if (crudMethods.contains('get') || crudMethods.contains('update')) {
       buffer.writeln('    Get.lazyPut(() => ${pascalModel}Controller(');
-      if (crudMethods.contains('get')) {
-        buffer.writeln(
-          '      get${pascalModel}UseCase: Get.find<Get${pascalModel}UseCase>(),',
-        );
-      }
-      if (crudMethods.contains('update')) {
-        buffer.writeln(
-          '      update${pascalModel}UseCase: Get.find<Update${pascalModel}UseCase>(),',
-        );
-      }
+      if (crudMethods.contains('get')) buffer.writeln('      get${pascalModel}UseCase: Get.find<Get${pascalModel}UseCase>(),');
+      if (crudMethods.contains('update')) buffer.writeln('      update${pascalModel}UseCase: Get.find<Update${pascalModel}UseCase>(),');
       buffer.writeln('    ),);');
     }
   }
