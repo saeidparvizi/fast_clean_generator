@@ -26,7 +26,83 @@ String toCamel(String s) {
   if (pascal.isEmpty) {
     return pascal;
   }
-  return pascal[0].toLowerCase() + pascal.substring(1);
+  final camel = pascal[0].toLowerCase() + pascal.substring(1);
+  return _escapeReservedKeyword(camel);
+}
+
+String _escapeReservedKeyword(String name) {
+  const reservedKeywords = {
+    'abstract',
+    'as',
+    'assert',
+    'async',
+    'await',
+    'break',
+    'case',
+    'catch',
+    'class',
+    'const',
+    'continue',
+    'covariant',
+    'default',
+    'deferred',
+    'do',
+    'dynamic',
+    'else',
+    'enum',
+    'export',
+    'extends',
+    'extension',
+    'external',
+    'factory',
+    'false',
+    'final',
+    'finally',
+    'for',
+    'function',
+    'get',
+    'hide',
+    'if',
+    'implements',
+    'import',
+    'in',
+    'interface',
+    'is',
+    'late',
+    'library',
+    'mixin',
+    'native',
+    'new',
+    'null',
+    'on',
+    'operator',
+    'part',
+    'patch',
+    'required',
+    'rethrow',
+    'return',
+    'set',
+    'show',
+    'static',
+    'super',
+    'switch',
+    'sync',
+    'this',
+    'throw',
+    'true',
+    'try',
+    'typedef',
+    'var',
+    'void',
+    'while',
+    'with',
+    'yield',
+  };
+
+  if (reservedKeywords.contains(name)) {
+    return '${name}Value';
+  }
+  return name;
 }
 
 String toPascal(String s) {

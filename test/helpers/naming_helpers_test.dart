@@ -9,10 +9,14 @@ void main() {
       expect(toPascal('user'), equals('User'));
     });
 
-    test('toCamel converts strings to camelCase', () {
+    test('toCamel converts strings to camelCase and escapes reserved keywords',
+        () {
       expect(toCamel('HelloWorld'), equals('helloWorld'));
       expect(toCamel('user_profile'), equals('userProfile'));
       expect(toCamel('APIClient'), equals('aPIClient'));
+      expect(toCamel('class'), equals('classValue'));
+      expect(toCamel('default'), equals('defaultValue'));
+      expect(toCamel('return'), equals('returnValue'));
     });
 
     test('toSnakeFromName converts PascalCase/camelCase to snake_case', () {
