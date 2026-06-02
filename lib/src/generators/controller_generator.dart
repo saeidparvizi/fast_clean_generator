@@ -204,12 +204,13 @@ class ControllerGenerator {
       final trimmedMethod = method.trim();
       if (trimmedMethod.isEmpty) continue;
 
-      // Check for method existence using a simpler check
-      final sigMatch =
-          RegExp(r'Future<void>\s+(\w+)\(').firstMatch(trimmedMethod);
+      // Extract method name to check for existence
+      // Handles: Future<void> name( or void name(
+      final sigMatch = RegExp(r'(?:Future<void>|void)\s+(\w+)\s*\(')
+          .firstMatch(trimmedMethod);
       if (sigMatch != null) {
         final methodName = sigMatch.group(1);
-        if (updatedContent.contains('Future<void> $methodName(')) continue;
+        if (updatedContent.contains(RegExp('\\b$methodName\\s*\\('))) continue;
       }
 
       // Append before the LAST closing brace of the class

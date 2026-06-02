@@ -55,6 +55,27 @@ void main() {
               "import 'package:test_project/features/booking/presentation/controllers/task_controller.dart';"));
     });
 
+    test('generate should always produce valid closing braces', () async {
+      final crudMethods = ['list', 'get'];
+      final result = await BindingGenerator.generate(
+        projectName: projectName,
+        feature: feature,
+        model: model,
+        newCrudMethods: crudMethods,
+        bindingFilePath: bindingPath,
+      );
+
+      // Verify exact ending of the file
+      expect(result.trim().endsWith('}'), isTrue,
+          reason: 'File must end with a closing brace');
+
+      // Verify dependencies method is closed
+      final lines = result.split('\n').map((e) => e.trim());
+      expect(lines.where((l) => l == '}').length, greaterThanOrEqualTo(2),
+          reason:
+              'File must have at least two closing braces (method and class)');
+    });
+
     test('generate should merge with existing methods in file', () async {
       final file = File(bindingPath);
       file.writeAsStringSync('''
