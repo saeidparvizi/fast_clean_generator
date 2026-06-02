@@ -4,6 +4,8 @@ import 'package:fast_clean_generator/src/generators/remote_data_generator.dart';
 import 'package:fast_clean_generator/src/generators/repository_generator.dart';
 import 'package:fast_clean_generator/src/generators/repository_impl_generator.dart';
 import 'package:fast_clean_generator/src/generators/app_pages_generator.dart';
+import 'package:fast_clean_generator/src/generate_code.dart';
+import 'package:fast_clean_generator/src/models/generate_options.dart';
 
 void main() {
   group('Integration Generator Tests (File system dependent)', () {
@@ -22,6 +24,12 @@ void main() {
       File('pubspec.yaml').writeAsStringSync('name: test_project');
       // Create required structure for some generators
       Directory('lib/core/routes').createSync(recursive: true);
+      Directory('lib/core/utils').createSync(recursive: true);
+      Directory('lib/core/data/network').createSync(recursive: true);
+      Directory('lib/core/helpers').createSync(recursive: true);
+      Directory('lib/core/use_case').createSync(recursive: true);
+      Directory('lib/core/exceptions').createSync(recursive: true);
+      Directory('lib/core/widgets').createSync(recursive: true);
     });
 
     tearDown(() {
@@ -101,6 +109,61 @@ void main() {
       );
       expect(result2, contains('...bookingRoutes,'));
       expect(result2, contains('...authRoutes,'));
+    });
+
+    test('Incremental Generation: Add multiple classes to same feature',
+        () async {
+      final engine = GeneratorEngine();
+      final options = GenerateOptions();
+
+      // 1. Generate Cart in order feature
+      await engine.generate(
+        jsonOrPath: '{"id": 1, "total": 10.0}',
+        rootClass: 'Cart',
+        feature: 'order',
+        crudMethods: ['list', 'get'],
+        options: options,
+      );
+
+      // 2. Generate Payment in SAME order feature
+      await engine.generate(
+        jsonOrPath: '{"id": 1, "amount": 20.0}',
+        rootClass: 'Payment',
+        feature: 'order',
+        crudMethods: ['list', 'add'],
+        options: options,
+      );
+
+      // Verify Entity files
+      expect(File('lib/features/order/domain/entities/cart_entity.dart').existsSync(), isTrue);
+      expect(File('lib/features/order/domain/entities/payment_entity.dart').existsSync(), isTrue);
+
+      // Verify Binding merge
+      final bindingContent = File('lib/features/order/presentation/bindings/order_binding.dart').readAsStringSync();
+      expect(bindingContent, contains('CartsUseCase'));
+      expect(bindingContent, contains('PaymentsUseCase'));
+
+      // Verify Routes merge
+      final routesContent = File('lib/features/order/routes/order_routes.dart').readAsStringSync();
+      expect(routesContent, contains('AppRoutes.carts'));
+      expect(routesContent, contains('AppRoutes.payments'));
+
+      // Verify Core AppPages merge
+      final appPagesContent = File('lib/core/routes/app_pages.dart').readAsStringSync();
+      expect(appPagesContent, contains('...orderRoutes'));
+      
+      // 3. Add a different feature
+      await engine.generate(
+        jsonOrPath: '{"id": 1}',
+        rootClass: 'User',
+        feature: 'auth',
+        crudMethods: ['get'],
+        options: options,
+      );
+      
+      final finalAppPagesContent = File('lib/core/routes/app_pages.dart').readAsStringSync();
+      expect(finalAppPagesContent, contains('...orderRoutes'));
+      expect(finalAppPagesContent, contains('...authRoutes'));
     });
   });
 }
