@@ -16,7 +16,8 @@ void main() {
     });
 
     group('generateList', () {
-      test('should generate a controller with list and delete methods', () async {
+      test('should generate a controller with list and delete methods',
+          () async {
         final crudMethods = ['list', 'delete'];
         final result = await ControllerGenerator.generateList(
           className: className,
@@ -27,10 +28,14 @@ void main() {
           controllerPath: controllerPath,
         );
 
-        expect(result, contains('class TasksController extends GetxController'));
+        expect(
+            result, contains('class TasksController extends GetxController'));
         expect(result, contains('final TasksUseCase tasksUseCase;'));
         expect(result, contains('Future<void> getTasks() async'));
-        expect(result, contains("import 'package:test_project/features/booking/domain/usecases/tasks_usecase.dart';"));
+        expect(
+            result,
+            contains(
+                "import 'package:test_project/features/booking/domain/usecases/tasks_usecase.dart';"));
       });
     });
 
@@ -59,7 +64,8 @@ void main() {
 
         expect(updatedContent, contains('Future<void> getTasks()'));
         expect(updatedContent, contains('Future<void> addTask'));
-        expect(updatedContent, contains('final AddTaskUseCase addTaskUseCase;'));
+        expect(
+            updatedContent, contains('final AddTaskUseCase addTaskUseCase;'));
       });
     });
   });

@@ -24,8 +24,8 @@ class ControllerGenerator {
           className, feature, projectName, crudMethods, jsonSchema);
     }
 
-    return _updateExistingController(
-        existingContent, className, feature, projectName, crudMethods, jsonSchema,
+    return _updateExistingController(existingContent, className, feature,
+        projectName, crudMethods, jsonSchema,
         isList: true);
   }
 
@@ -48,8 +48,8 @@ class ControllerGenerator {
           className, feature, projectName, crudMethods, jsonSchema);
     }
 
-    return _updateExistingController(
-        existingContent, className, feature, projectName, crudMethods, jsonSchema,
+    return _updateExistingController(existingContent, className, feature,
+        projectName, crudMethods, jsonSchema,
         isList: false);
   }
 
@@ -80,8 +80,8 @@ class ControllerGenerator {
     buffer.writeln(
         'class ${pluralPascalModel}Controller extends GetxController {');
     buffer.writeln();
-    _writeConstructor(
-        buffer, pluralPascalModel, className, crudMethods, isList: true);
+    _writeConstructor(buffer, pluralPascalModel, className, crudMethods,
+        isList: true);
     buffer.writeln();
     _writeUseCaseFields(buffer, className, crudMethods, isList: true);
     buffer.writeln();
@@ -167,7 +167,7 @@ class ControllerGenerator {
         isList: isList);
     for (final imp in newImports) {
       if (!updatedContent.contains(imp)) {
-        updatedContent = imp + '\n' + updatedContent;
+        updatedContent = '$imp\n$updatedContent';
       }
     }
 
@@ -185,10 +185,8 @@ class ControllerGenerator {
             RegExp(r'class\s+\w+Controller\s+extends\s+GetxController\s*\{')
                 .firstMatch(updatedContent);
         if (classMatch != null) {
-          updatedContent = updatedContent.substring(0, classMatch.end) +
-              '\n  ' +
-              trimmed +
-              updatedContent.substring(classMatch.end);
+          updatedContent =
+              '${updatedContent.substring(0, classMatch.end)}\n  $trimmed${updatedContent.substring(classMatch.end)}';
         }
       }
     }
@@ -205,9 +203,10 @@ class ControllerGenerator {
     for (final method in newMethods) {
       final trimmedMethod = method.trim();
       if (trimmedMethod.isEmpty) continue;
-      
+
       // Check for method existence using a simpler check
-      final sigMatch = RegExp(r'Future<void>\s+(\w+)\(').firstMatch(trimmedMethod);
+      final sigMatch =
+          RegExp(r'Future<void>\s+(\w+)\(').firstMatch(trimmedMethod);
       if (sigMatch != null) {
         final methodName = sigMatch.group(1);
         if (updatedContent.contains('Future<void> $methodName(')) continue;
@@ -216,22 +215,21 @@ class ControllerGenerator {
       // Append before the LAST closing brace of the class
       final lastBraceIndex = updatedContent.lastIndexOf('}');
       if (lastBraceIndex != -1) {
-        updatedContent = updatedContent.substring(0, lastBraceIndex) +
-            '\n  ' +
-            trimmedMethod +
-            '\n' +
-            updatedContent.substring(lastBraceIndex);
+        updatedContent =
+            '${updatedContent.substring(0, lastBraceIndex)}\n  $trimmedMethod\n${updatedContent.substring(lastBraceIndex)}';
       }
     }
 
     return updatedContent;
   }
 
-  static String _updateConstructorInString(String content, String className,
-      List<String> crudMethods, bool isList) {
-    final pascal = isList ? pluralize(toPascal(className)) : toPascal(className);
+  static String _updateConstructorInString(
+      String content, String className, List<String> crudMethods, bool isList) {
+    final pascal =
+        isList ? pluralize(toPascal(className)) : toPascal(className);
     // Be more flexible with whitespaces
-    final pattern = RegExp(pascal + r'Controller\s*\(\s*\{([\s\S]*?)\}\s*\)\s*;');
+    final pattern =
+        RegExp(pascal + r'Controller\s*\(\s*\{([\s\S]*?)\}\s*\)\s*;');
 
     return content.replaceFirstMapped(pattern, (match) {
       final existingParams = match.group(1) ?? '';
@@ -239,19 +237,26 @@ class ControllerGenerator {
       final pascalModel = toPascal(className);
 
       if (isList) {
-        if (crudMethods.contains('list'))
-          newParams.add('required this.${toCamel(pluralize(pascalModel))}UseCase');
-        if (crudMethods.contains('add'))
+        if (crudMethods.contains('list')) {
+          newParams
+              .add('required this.${toCamel(pluralize(pascalModel))}UseCase');
+        }
+        if (crudMethods.contains('add')) {
           newParams.add('required this.add${pascalModel}UseCase');
-        if (crudMethods.contains('update'))
+        }
+        if (crudMethods.contains('update')) {
           newParams.add('required this.update${pascalModel}UseCase');
-        if (crudMethods.contains('delete'))
+        }
+        if (crudMethods.contains('delete')) {
           newParams.add('required this.delete${pascalModel}UseCase');
+        }
       } else {
-        if (crudMethods.contains('get'))
+        if (crudMethods.contains('get')) {
           newParams.add('required this.get${pascalModel}UseCase');
-        if (crudMethods.contains('update'))
+        }
+        if (crudMethods.contains('update')) {
           newParams.add('required this.update${pascalModel}UseCase');
+        }
       }
 
       final mergedParams = existingParams
@@ -265,58 +270,70 @@ class ControllerGenerator {
     });
   }
 
-  static List<String> _generateUseCaseImports(
-      String feature, String model, List<String> crudMethods, String projectName,
+  static List<String> _generateUseCaseImports(String feature, String model,
+      List<String> crudMethods, String projectName,
       {required bool isList}) {
     final snakeModel = toSnakeFromName(model);
     final pluralSnakeModel = toSnakeFromName(pluralize(model));
     final imports = <String>[];
 
     if (isList) {
-      if (crudMethods.contains('list'))
+      if (crudMethods.contains('list')) {
         imports.add(
             "import 'package:$projectName/features/$feature/domain/usecases/${pluralSnakeModel}_usecase.dart';");
-      if (crudMethods.contains('add'))
+      }
+      if (crudMethods.contains('add')) {
         imports.add(
             "import 'package:$projectName/features/$feature/domain/usecases/add_${snakeModel}_usecase.dart';");
-      if (crudMethods.contains('update'))
+      }
+      if (crudMethods.contains('update')) {
         imports.add(
             "import 'package:$projectName/features/$feature/domain/usecases/update_${snakeModel}_usecase.dart';");
-      if (crudMethods.contains('delete'))
+      }
+      if (crudMethods.contains('delete')) {
         imports.add(
             "import 'package:$projectName/features/$feature/domain/usecases/delete_${snakeModel}_usecase.dart';");
+      }
       imports.add("import 'package:$projectName/core/utils/utils.dart';");
     } else {
-      if (crudMethods.contains('get'))
+      if (crudMethods.contains('get')) {
         imports.add(
             "import 'package:$projectName/features/$feature/domain/usecases/get_${snakeModel}_usecase.dart';");
-      if (crudMethods.contains('update'))
+      }
+      if (crudMethods.contains('update')) {
         imports.add(
             "import 'package:$projectName/features/$feature/domain/usecases/update_${snakeModel}_usecase.dart';");
+      }
     }
     return imports;
   }
 
-  static void _writeConstructor(
-      StringBuffer buffer, String pascalClass, String model, List<String> crudMethods,
+  static void _writeConstructor(StringBuffer buffer, String pascalClass,
+      String model, List<String> crudMethods,
       {required bool isList}) {
     buffer.write('  ${pascalClass}Controller({');
     final params = <String>[];
     final pascalModel = toPascal(model);
     if (isList) {
-      if (crudMethods.contains('list'))
+      if (crudMethods.contains('list')) {
         params.add('required this.${toCamel(pluralize(pascalModel))}UseCase');
-      if (crudMethods.contains('add'))
+      }
+      if (crudMethods.contains('add')) {
         params.add('required this.add${pascalModel}UseCase');
-      if (crudMethods.contains('update'))
+      }
+      if (crudMethods.contains('update')) {
         params.add('required this.update${pascalModel}UseCase');
-      if (crudMethods.contains('delete'))
+      }
+      if (crudMethods.contains('delete')) {
         params.add('required this.delete${pascalModel}UseCase');
+      }
     } else {
-      if (crudMethods.contains('get'))
+      if (crudMethods.contains('get')) {
         params.add('required this.get${pascalModel}UseCase');
-      if (crudMethods.contains('update'))
+      }
+      if (crudMethods.contains('update')) {
         params.add('required this.update${pascalModel}UseCase');
+      }
     }
     buffer.write(params.join(', '));
     buffer.writeln('});');
@@ -328,29 +345,43 @@ class ControllerGenerator {
     final pascalModel = toPascal(model);
     final pluralPascal = pluralize(pascalModel);
     if (isList) {
-      if (crudMethods.contains('list'))
-        buffer.writeln('  final $pluralPascal' + 'UseCase ${toCamel(pluralPascal)}UseCase;');
-      if (crudMethods.contains('add'))
-        buffer.writeln('  final Add${pascalModel}UseCase add${pascalModel}UseCase;');
-      if (crudMethods.contains('update'))
-        buffer.writeln('  final Update${pascalModel}UseCase update${pascalModel}UseCase;');
-      if (crudMethods.contains('delete'))
-        buffer.writeln('  final Delete${pascalModel}UseCase delete${pascalModel}UseCase;');
+      if (crudMethods.contains('list')) {
+        buffer.writeln(
+            '  final $pluralPascal' 'UseCase ${toCamel(pluralPascal)}UseCase;');
+      }
+      if (crudMethods.contains('add')) {
+        buffer.writeln(
+            '  final Add${pascalModel}UseCase add${pascalModel}UseCase;');
+      }
+      if (crudMethods.contains('update')) {
+        buffer.writeln(
+            '  final Update${pascalModel}UseCase update${pascalModel}UseCase;');
+      }
+      if (crudMethods.contains('delete')) {
+        buffer.writeln(
+            '  final Delete${pascalModel}UseCase delete${pascalModel}UseCase;');
+      }
     } else {
-      if (crudMethods.contains('get'))
-        buffer.writeln('  final Get${pascalModel}UseCase get${pascalModel}UseCase;');
-      if (crudMethods.contains('update'))
-        buffer.writeln('  final Update${pascalModel}UseCase update${pascalModel}UseCase;');
+      if (crudMethods.contains('get')) {
+        buffer.writeln(
+            '  final Get${pascalModel}UseCase get${pascalModel}UseCase;');
+      }
+      if (crudMethods.contains('update')) {
+        buffer.writeln(
+            '  final Update${pascalModel}UseCase update${pascalModel}UseCase;');
+      }
     }
   }
 
-  static void _writeOnInit(StringBuffer buffer, String pascalClass,
-      List<String> crudMethods,
+  static void _writeOnInit(
+      StringBuffer buffer, String pascalClass, List<String> crudMethods,
       {required bool isList, String? idField, String? snakeModel}) {
     buffer.writeln('  @override');
     buffer.writeln('  void onInit() {');
     if (isList) {
-      if (crudMethods.contains('list')) buffer.writeln('    get$pascalClass();');
+      if (crudMethods.contains('list')) {
+        buffer.writeln('    get$pascalClass();');
+      }
     } else {
       buffer.writeln('    final argument = Get.arguments;');
       buffer.writeln('    final parameters = Get.parameters;');
@@ -358,7 +389,9 @@ class ControllerGenerator {
           '    if (argument != null && argument is Map && argument.containsKey(\'$snakeModel\')) { item = argument[\'$snakeModel\']; }');
       buffer.writeln('    id = parameters[\'$idField\'];');
       buffer.writeln('    if (item == null && id != null && id!.isNotEmpty) {');
-      if (crudMethods.contains('get')) buffer.writeln('      get$pascalClass(id!);');
+      if (crudMethods.contains('get')) {
+        buffer.writeln('      get$pascalClass(id!);');
+      }
       buffer.writeln('    }');
     }
     buffer.writeln('    super.onInit();');
