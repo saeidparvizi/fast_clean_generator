@@ -49,6 +49,10 @@ void main() {
             {'key': 'value'}
           ], 'list'),
           equals('List<ListEntity>'));
+      expect(dartTypeForEntity(['a', 'b'], 'tags'), equals('List<String>'));
+      expect(dartTypeForEntity([1, 2], 'scores'), equals('List<int>'));
+      expect(dartTypeForEntity([true, false], 'flags'), equals('List<bool>'));
+      expect(dartTypeForEntity([1.1, 2.2], 'prices'), equals('List<double>'));
       expect(dartTypeForEntity('text', 'name'), equals('String'));
     });
 

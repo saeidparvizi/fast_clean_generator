@@ -177,6 +177,30 @@ void main() {
       expect(finalAppPagesContent, contains('...authRoutes'));
     });
 
+    test('Gold Standard: Generated code must be syntactically valid', () async {
+      final engine = GeneratorEngine();
+      final options = GenerateOptions();
+
+      // Generate a complex feature
+      const schema =
+          '{"id": 1, "title": "Test", "metadata": {"author": "Saeid"}}';
+      await engine.generate(
+        jsonOrPath: schema,
+        rootClass: 'Task',
+        feature: 'todo',
+        crudMethods: ['list', 'get', 'add', 'update', 'delete'],
+        options: options,
+      );
+
+      // Check all generated files for syntax errors at once using dart format
+      // If any file has syntax errors, dart format returns exit code 65
+      final result = await Process.run(
+          'dart', ['format', '--output=none', 'lib/features/todo']);
+
+      expect(result.exitCode, isNot(65),
+          reason: 'Generated code has syntax errors!\n${result.stderr}');
+    }, timeout: const Timeout(Duration(minutes: 1)));
+
     test('Incremental CRUD: Verify all layers keep old methods', () async {
       final engine = GeneratorEngine();
       final options = GenerateOptions();

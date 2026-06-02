@@ -13,8 +13,19 @@ String dartTypeForEntity(dynamic value, String key) {
     return '${toPascal(key)}Entity';
   }
   if (value is List) {
-    if (value.isNotEmpty && value.first is Map) {
-      return 'List<${toPascal(key)}Entity>';
+    if (value.isNotEmpty) {
+      final first = value.first;
+      if (first is Map) {
+        return 'List<${toPascal(key)}Entity>';
+      } else if (first is int) {
+        return 'List<int>';
+      } else if (first is double) {
+        return 'List<double>';
+      } else if (first is bool) {
+        return 'List<bool>';
+      } else if (first is String) {
+        return 'List<String>';
+      }
     }
     return 'List<dynamic>';
   }

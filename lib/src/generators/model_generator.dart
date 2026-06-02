@@ -56,11 +56,25 @@ String generateModel({
         b.writeln(
           "      $camel: json['$key'] != null ? ${nested}Model.fromJson(json['$key']) : null,",
         );
-      } else if (value is List && value.isNotEmpty && value.first is Map) {
-        final nested = toPascal(key);
-        b.writeln(
-          "      $camel: (json['$key'] as List?)?.map((e) => ${nested}Model.fromJson(e)).toList(),",
-        );
+      } else if (value is List && value.isNotEmpty) {
+        if (value.first is Map) {
+          final nested = toPascal(key);
+          b.writeln(
+            "      $camel: (json['$key'] as List?)?.map((e) => ${nested}Model.fromJson(e)).toList(),",
+          );
+        } else {
+          // Primitive list
+          final first = value.first;
+          String type = 'dynamic';
+          if (first is String) type = 'String';
+          if (first is int) type = 'int';
+          if (first is double) type = 'double';
+          if (first is bool) type = 'bool';
+
+          b.writeln(
+            "      $camel: json['$key'] != null ? List<$type>.from(json['$key']) : null,",
+          );
+        }
       } else {
         b.writeln("      $camel: json['$key'],");
       }
@@ -77,8 +91,13 @@ String generateModel({
     final camel = toCamel(key);
     if (value is Map) {
       b.writeln("      '$key': $camel?.toJson(),");
-    } else if (value is List && value.isNotEmpty && value.first is Map) {
-      b.writeln("      '$key': $camel?.map((e) => e.toJson()).toList(),");
+    } else if (value is List && value.isNotEmpty) {
+      if (value.first is Map) {
+        b.writeln("      '$key': $camel?.map((e) => e.toJson()).toList(),");
+      } else {
+        // Primitive list
+        b.writeln("      '$key': $camel,");
+      }
     } else {
       b.writeln("      '$key': $camel,");
     }

@@ -123,6 +123,33 @@ void main() {
           contains("'comments': comments?.map((e) => e.toJson()).toList(),"));
     });
 
+    test('generateModel handles primitive lists in fromJson and toJson', () {
+      final data = {
+        'id': 1,
+        'tags': ['a', 'b'],
+        'scores': [1, 2]
+      };
+
+      final result = generateModel(
+        className: 'Task',
+        feature: feature,
+        projectName: projectName,
+        data: data,
+        fileBase: {},
+      );
+
+      expect(
+          result,
+          contains(
+              "tags: json['tags'] != null ? List<String>.from(json['tags']) : null,"));
+      expect(
+          result,
+          contains(
+              "scores: json['scores'] != null ? List<int>.from(json['scores']) : null,"));
+      expect(result, contains("'tags': tags,"));
+      expect(result, contains("'scores': scores,"));
+    });
+
     test('generateModel handles fields correctly', () {
       final data = {
         'id': 1,
