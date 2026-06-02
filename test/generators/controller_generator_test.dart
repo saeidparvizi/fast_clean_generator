@@ -7,12 +7,19 @@ void main() {
     const projectName = 'test_project';
     const feature = 'booking';
     const className = 'Task';
-    const controllerPath = 'test_controller.dart';
+    late Directory tempDir;
+    late String controllerPath;
     final jsonSchema = {'id': 1, 'title': 'Test'};
 
+    setUp(() {
+      tempDir = Directory.systemTemp.createTempSync('controller_test_');
+      controllerPath = '${tempDir.path}/test_controller.dart';
+    });
+
     tearDown(() {
-      final file = File(controllerPath);
-      if (file.existsSync()) file.deleteSync();
+      if (tempDir.existsSync()) {
+        tempDir.deleteSync(recursive: true);
+      }
     });
 
     group('generateList', () {

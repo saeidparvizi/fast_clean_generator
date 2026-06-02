@@ -7,12 +7,17 @@ void main() {
     const projectName = 'test_project';
     const feature = 'booking';
     const className = 'Task';
-    const routesFilePath = 'test_routes.dart';
+    late Directory tempDir;
+    late String routesFilePath;
+
+    setUp(() {
+      tempDir = Directory.systemTemp.createTempSync('route_test_');
+      routesFilePath = '${tempDir.path}/test_routes.dart';
+    });
 
     tearDown(() {
-      final file = File(routesFilePath);
-      if (file.existsSync()) {
-        file.deleteSync();
+      if (tempDir.existsSync()) {
+        tempDir.deleteSync(recursive: true);
       }
     });
 
