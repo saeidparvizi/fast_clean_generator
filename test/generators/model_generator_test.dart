@@ -99,5 +99,22 @@ void main() {
           contains(
               "tags: (json['tags'] as List?)?.map((e) => TagsModel.fromJson(e)).toList(),"));
     });
+    test('generateModel handles fields correctly', () {
+      final data = {
+        'id': 1,
+        'created_at': '2023-12-31',
+      };
+
+      final result = generateModel(
+        className: 'Task',
+        feature: feature,
+        projectName: projectName,
+        data: data,
+        fileBase: {},
+      );
+
+      expect(result, contains("createdAt: json['created_at'],"));
+      expect(result, contains("'created_at': createdAt,"));
+    });
   });
 }

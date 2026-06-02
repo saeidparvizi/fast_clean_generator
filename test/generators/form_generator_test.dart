@@ -33,7 +33,12 @@ void main() {
           result,
           contains(
               'final TextEditingController _priorityController = TextEditingController();'));
-      expect(result, contains('DateTime? _dueDateValue;'));
+
+      // Due date should now be a regular TextEditingController since it's a String
+      expect(
+          result,
+          contains(
+              'final TextEditingController _dueDateController = TextEditingController();'));
 
       // ID should not have a controller as it's usually not editable
       expect(
@@ -60,8 +65,7 @@ void main() {
       expect(result, contains('title: _titleController.text,'));
     });
 
-    test('generateForm includes DatePicker logic when date string is present',
-        () {
+    test('generateForm treats dates as regular text fields', () {
       final jsonSchema = {
         'due_date': '2023-12-31',
       };
@@ -73,11 +77,15 @@ void main() {
         jsonSchema: jsonSchema,
       );
 
+      // Should NOT include date picker logic anymore
       expect(
           result,
-          contains(
-              'Future<void> _selectDate(BuildContext context, String fieldName) async'));
-      expect(result, contains('InkWell('));
+          isNot(contains(
+              'Future<void> _selectDate(BuildContext context, String fieldName) async')));
+      expect(result, isNot(contains('InkWell(')));
+
+      // Should include regular AppInput for the date
+      expect(result, contains('labelText: \'Due Date\''));
     });
   });
 }

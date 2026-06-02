@@ -447,12 +447,6 @@ String _getFieldType(dynamic value) {
   if (value is bool) {
     return 'bool';
   }
-  if (value is String) {
-    if (_isDateString(value)) {
-      return 'DateTime';
-    }
-    return 'String';
-  }
   if (value is Map) {
     return 'Map';
   }
@@ -466,23 +460,8 @@ bool _isNestedField(dynamic value) {
   return value is Map || (value is List && value.isNotEmpty);
 }
 
-bool _isDateString(String value) {
-  final datePatterns = [
-    RegExp(r'^\d{4}-\d{2}-\d{2}$'),
-    RegExp(r'^\d{4}-\d{2}-\d{2}T'),
-    RegExp(r'^\d{2}/\d{2}/\d{4}$'),
-  ];
-
-  return datePatterns.any((pattern) => pattern.hasMatch(value));
-}
-
 bool _hasDateTimeField(Map<String, dynamic> fields) {
-  return fields.values.any((value) {
-    if (value is String) {
-      return _isDateString(value);
-    }
-    return false;
-  });
+  return false;
 }
 
 bool _hasNestedField(Map<String, dynamic> fields) {

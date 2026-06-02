@@ -38,6 +38,7 @@ void main() {
       expect(dartTypeForEntity(1, 'id'), equals('int'));
       expect(dartTypeForEntity(1.5, 'price'), equals('double'));
       expect(dartTypeForEntity(true, 'isActive'), equals('bool'));
+      expect(dartTypeForEntity('2023-12-31', 'createdAt'), equals('String'));
       expect(dartTypeForEntity({'key': 'value'}, 'data'), equals('DataEntity'));
       expect(
           dartTypeForEntity([
