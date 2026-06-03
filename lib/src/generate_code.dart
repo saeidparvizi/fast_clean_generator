@@ -48,6 +48,14 @@ class GeneratorEngine {
     final jsonSchema = await loadJson(jsonOrPath);
     print('JSON schema loaded successfully.');
 
+    // ──────────────────────────────────────────────
+    // 0. Collect all nested classes
+    // ──────────────────────────────────────────────
+    final allModelData = <String, Map<String, dynamic>>{};
+    final fileBaseMap = <String, String>{};
+    collectClasses(rootClass, jsonSchema, allModelData, fileBaseMap,
+        jsonKeyForThisClass: toSnakeFromName(rootClass));
+
     final className = rootClass; // e.g. "Support", "Ticket", etc.
     final snakeClass = toSnakeFromName(className);
     final pascalClass = toPascal(className);
@@ -61,35 +69,50 @@ class GeneratorEngine {
     final presentationDir = '$baseDir/presentation';
 
     // ──────────────────────────────────────────────
-    // 1. Entity
+    // 1. Entities (Loop through all collected classes)
     // ──────────────────────────────────────────────
     if (options.generateEntity) {
-      final entityContent = generateEntity(
-        pascalClass,
-        jsonSchema,
-        {}, // fileBase - if nested models exist, fill it
-      );
+      for (final entry in allModelData.entries) {
+        final currentClassName = entry.key;
+        final currentData = entry.value;
+        final currentSnakeName =
+            fileBaseMap[currentClassName] ?? toSnakeFromName(currentClassName);
 
-      final entityPath = '$domainDir/entities/${snakeClass}_entity.dart';
-      await writeFile(entityPath, entityContent);
-      print('Generated: $entityPath');
+        final entityContent = generateEntity(
+          currentClassName,
+          currentData,
+          fileBaseMap,
+        );
+
+        final entityPath =
+            '$domainDir/entities/${currentSnakeName}_entity.dart';
+        await writeFile(entityPath, entityContent);
+        print('Generated Entity: $entityPath');
+      }
     }
 
     // ──────────────────────────────────────────────
-    // 2. Model (fromJson / toJson)
+    // 2. Models (Loop through all collected classes)
     // ──────────────────────────────────────────────
     if (options.generateModel) {
-      final modelContent = generateModel(
-        className: pascalClass,
-        feature: feature,
-        projectName: projectName,
-        data: jsonSchema,
-        fileBase: {}, // fill if nested
-      );
+      for (final entry in allModelData.entries) {
+        final currentClassName = entry.key;
+        final currentData = entry.value;
+        final currentSnakeName =
+            fileBaseMap[currentClassName] ?? toSnakeFromName(currentClassName);
 
-      final modelPath = '$dataDir/models/${snakeClass}_model.dart';
-      await writeFile(modelPath, modelContent);
-      print('Generated: $modelPath');
+        final modelContent = generateModel(
+          className: currentClassName,
+          feature: feature,
+          projectName: projectName,
+          data: currentData,
+          fileBase: fileBaseMap,
+        );
+
+        final modelPath = '$dataDir/models/${currentSnakeName}_model.dart';
+        await writeFile(modelPath, modelContent);
+        print('Generated Model: $modelPath');
+      }
     }
 
     // ──────────────────────────────────────────────

@@ -201,6 +201,57 @@ void main() {
           reason: 'Generated code has syntax errors!\n${result.stderr}');
     }, timeout: const Timeout(Duration(minutes: 1)));
 
+    test('Multi-level Nesting: Should generate all nested classes', () async {
+      final engine = GeneratorEngine();
+      final options = GenerateOptions();
+
+      const deepSchema = '''
+      {
+        "id": 1,
+        "customer": {
+          "name": "Saeid",
+          "address": {
+            "city": "Tehran"
+          }
+        }
+      }
+      ''';
+
+      await engine.generate(
+        jsonOrPath: deepSchema,
+        rootClass: 'Order',
+        feature: 'sales',
+        crudMethods: ['get'],
+        options: options,
+      );
+
+      // Verify root
+      expect(
+          File('lib/features/sales/domain/entities/order_entity.dart')
+              .existsSync(),
+          isTrue);
+
+      // Verify level 1 nesting (This is expected to fail currently)
+      expect(
+          File('lib/features/sales/domain/entities/customer_entity.dart')
+              .existsSync(),
+          isTrue,
+          reason: 'CustomerEntity should be generated for nested object');
+
+      // Verify level 2 nesting
+      expect(
+          File('lib/features/sales/domain/entities/address_entity.dart')
+              .existsSync(),
+          isTrue,
+          reason: 'AddressEntity should be generated for deeply nested object');
+
+      // Verify Model recursion
+      final orderModel = File('lib/features/sales/data/models/order_model.dart')
+          .readAsStringSync();
+      expect(orderModel, contains('CustomerModel.fromJson'),
+          reason: 'OrderModel should call CustomerModel.fromJson');
+    });
+
     test('Incremental CRUD: Verify all layers keep old methods', () async {
       final engine = GeneratorEngine();
       final options = GenerateOptions();
