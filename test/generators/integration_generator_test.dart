@@ -203,6 +203,30 @@ void main() {
           reason: 'Generated code has syntax errors!\n${result.stderr}');
     }, timeout: const Timeout(Duration(minutes: 1)));
 
+    test('Reserved Keywords: Should handle reserved keywords as class names', () async {
+      final engine = GeneratorEngine();
+      final options = GenerateOptions();
+
+      // "Default" is a dangerous word if not handled
+      await engine.generate(
+        jsonOrPath: '{"id": 1}',
+        rootClass: 'Default',
+        feature: 'settings',
+        crudMethods: ['get'],
+        options: options,
+      );
+
+      // Verify Entity exists
+      expect(File('lib/features/settings/domain/entities/default_entity.dart').existsSync(), isTrue);
+      
+      // Verify Binding contains escaped variable name
+      final bindingContent = File('lib/features/settings/presentation/bindings/settings_binding.dart').readAsStringSync();
+      expect(bindingContent, contains('DefaultController'));
+      // The variable name inside lazyPut should be defaultValue (escaped)
+      // but since we don't use variables in Get.lazyPut, we should check usecases/controllers
+      expect(bindingContent, contains('GetDefaultUseCase'));
+    });
+
     test('Multi-level Nesting: Should generate all nested classes', () async {
       final engine = GeneratorEngine();
       final options = GenerateOptions();

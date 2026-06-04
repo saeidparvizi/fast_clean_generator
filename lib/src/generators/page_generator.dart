@@ -50,7 +50,6 @@ String generateListScreen({
   buffer.writeln('      appBar: AppAppbar(');
   buffer.writeln('        label: \'$pluralPascalModel\',');
 
-  // Add FAB if add method exists
   if (crudMethods.contains('add')) {
     buffer.writeln('        actions: [');
     buffer.writeln('          IconButton(');
@@ -60,6 +59,8 @@ String generateListScreen({
     );
     buffer.writeln('          ),');
     buffer.writeln('        ],');
+  } else {
+    buffer.writeln('        actions: [],');
   }
 
   buffer.writeln('      ),');
@@ -95,38 +96,39 @@ String generateListScreen({
       .writeln('                  title: Text(\'#\${$snakeModel.$idField}\'),');
   buffer.writeln('                  subtitle: Text($snakeModel.toString()),');
   buffer.writeln('                  trailing: Row(');
-  buffer.writeln('                  mainAxisSize: MainAxisSize.min,');
-  buffer.writeln('                  children: [');
+  buffer.writeln('                    mainAxisSize: MainAxisSize.min,');
+  buffer.writeln('                    children: [');
 
   if (crudMethods.contains('get')) {
-    buffer.writeln('                    IconButton(');
-    buffer.writeln('                      icon: const Icon(Icons.visibility),');
+    buffer.writeln('                      IconButton(');
+    buffer.writeln('                        icon: const Icon(Icons.visibility),');
     buffer.writeln(
-      '                      onPressed: () => Get.toNamed(AppRoutes.$snakeModel, parameters: {\'id\': $snakeModel.$idField.toString()}),',
+      '                        onPressed: () => Get.toNamed(AppRoutes.$snakeModel, parameters: {\'id\': $snakeModel.$idField.toString()}),',
     );
-    buffer.writeln('                    ),');
+    buffer.writeln('                      ),');
   }
 
   if (crudMethods.contains('update')) {
-    buffer.writeln('                    IconButton(');
-    buffer.writeln('                      icon: const Icon(Icons.edit),');
+    buffer.writeln('                      IconButton(');
+    buffer.writeln('                        icon: const Icon(Icons.edit),');
     buffer.writeln(
-      '                      onPressed: () => Get.toNamed(AppRoutes.${snakeModel}Edit, parameters: {\'id\': $snakeModel.$idField.toString()}),',
+      '                        onPressed: () => Get.toNamed(AppRoutes.${snakeModel}Edit, parameters: {\'id\': $snakeModel.$idField.toString()}),',
     );
-    buffer.writeln('                    ),');
+    buffer.writeln('                      ),');
   }
 
   if (crudMethods.contains('delete')) {
-    buffer.writeln('                    IconButton(');
+    buffer.writeln('                      IconButton(');
     buffer.writeln(
-        '                      icon: const Icon(Icons.delete, color: Colors.red),');
+        '                        icon: const Icon(Icons.delete, color: Colors.red),');
     buffer.writeln(
-      '                      onPressed: () => showDelete${pascalModel}Dialog(context, $snakeModel.$idField, $snakeModel.toString()),',
+      '                        onPressed: () => showDelete${pascalModel}Dialog(context, $snakeModel.$idField, $snakeModel.toString()),',
     );
-    buffer.writeln('                    ),');
+    buffer.writeln('                      ),');
   }
 
-  buffer.writeln('                  ],');
+  buffer.writeln('                    ],');
+  buffer.writeln('                  ),');
   buffer.writeln('                ),');
   buffer.writeln('              );');
   buffer.writeln('            },');
@@ -242,7 +244,7 @@ String generateSingleScreen({
     final title = toTitleCase(key);
 
     buffer.writeln(
-        '                _buildDetailRow(\'$title\', \${${snakeModel}Data.$camelKey?.toString() ?? "N/A"}),');
+        '                _buildDetailRow(\'$title\', ${snakeModel}Data.$camelKey?.toString() ?? "N/A"),');
   });
 
   buffer.writeln('              ],');
