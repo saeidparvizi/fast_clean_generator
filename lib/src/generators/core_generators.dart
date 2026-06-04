@@ -124,6 +124,60 @@ class ApiHelper {
 ''';
   }
 
+  static String generateDioProvider() {
+    return '''
+import 'package:dio/dio.dart';
+
+class ApiProvider {
+  final Dio dio;
+
+  ApiProvider()
+      : dio = Dio(
+          BaseOptions(
+            baseUrl: 'https://api.example.com',
+            connectTimeout: const Duration(seconds: 5),
+            receiveTimeout: const Duration(seconds: 3),
+          ),
+        );
+
+  Future<Response> get(String path, {Map<String, dynamic>? data}) =>
+      dio.get(path, queryParameters: data);
+
+  Future<Response> post(String path, {dynamic data}) =>
+      dio.post(path, data: data);
+
+  Future<Response> put(String path, {dynamic data}) =>
+      dio.put(path, data: data);
+
+  Future<Response> delete(String path) => dio.delete(path);
+}
+''';
+  }
+
+  static String generateDioHelper() {
+    return '''
+import 'package:dio/dio.dart';
+import '../exceptions/server_exception.dart';
+
+class ApiHelper {
+  Future<T> handleRequest<T>({
+    required Future<Response> Function() request,
+    required T Function(dynamic) onSuccess,
+    required String debugLabel,
+  }) async {
+    try {
+      final response = await request();
+      return onSuccess(response.data);
+    } on DioException catch (e) {
+      throw ServerException(e.message ?? 'Network Error');
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+}
+''';
+  }
+
   static String generateAppInput() {
     return '''
 import 'package:flutter/material.dart';

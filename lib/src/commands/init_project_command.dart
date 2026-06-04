@@ -13,6 +13,16 @@ class InitProjectCommand extends Command {
   String get description =>
       'Initializes a new Flutter project with Clean Architecture structure and core files.';
 
+  InitProjectCommand() {
+    argParser.addOption(
+      'http',
+      abbr: 'n',
+      help: 'Choose the networking library to use.',
+      allowed: ['get', 'dio'],
+      defaultsTo: 'get',
+    );
+  }
+
   @override
   Future<void> run() async {
     print(
@@ -21,14 +31,17 @@ class InitProjectCommand extends Command {
     final projectName = detectProjectName();
     print(TerminalStyle.info('Project Name: $projectName'));
 
+    final httpLibrary = argResults?['http'] as String? ?? 'get';
+    print(TerminalStyle.info('Networking Library: ${httpLibrary.toUpperCase()}'));
+
     // 1. Create Core Directories
     _createDirectories();
 
     // 2. Create Core Files
-    await _createCoreFiles();
+    await _createCoreFiles(httpLibrary);
 
     // 3. Update pubspec.yaml dependencies
-    await _updatePubspec();
+    await _updatePubspec(httpLibrary);
 
     print(TerminalStyle.success('\n✅ Project initialized successfully!'));
     print(TerminalStyle.info('Run "flutter pub get" to install dependencies.'));
@@ -55,7 +68,7 @@ class InitProjectCommand extends Command {
     }
   }
 
-  Future<void> _createCoreFiles() async {
+  Future<void> _createCoreFiles(String httpLibrary) async {
     print(TerminalStyle.info('\n📄 Generating Core Files...'));
 
     final files = {
@@ -66,9 +79,12 @@ class InitProjectCommand extends Command {
       'lib/core/utils/repository_executor.dart':
           CoreGenerator.generateRepositoryExecutor(),
       'lib/core/utils/utils.dart': CoreGenerator.generateUtils(),
-      'lib/core/data/network/api_provider.dart':
-          CoreGenerator.generateApiProvider(),
-      'lib/core/helpers/api_helper.dart': CoreGenerator.generateApiHelper(),
+      'lib/core/data/network/api_provider.dart': httpLibrary == 'dio'
+          ? CoreGenerator.generateDioProvider()
+          : CoreGenerator.generateApiProvider(),
+      'lib/core/helpers/api_helper.dart': httpLibrary == 'dio'
+          ? CoreGenerator.generateDioHelper()
+          : CoreGenerator.generateApiHelper(),
       'lib/core/routes/app_routes.dart':
           CoreGenerator.generateInitialAppRoutes(),
       'lib/core/routes/app_pages.dart': CoreGenerator.generateInitialAppPages(),
@@ -94,7 +110,7 @@ class InitProjectCommand extends Command {
         '  ✓ Updated: $mainDartPath (Set up GetMaterialApp)'));
   }
 
-  Future<void> _updatePubspec() async {
+  Future<void> _updatePubspec(String httpLibrary) async {
     print(TerminalStyle.info('\n📦 Updating pubspec.yaml dependencies...'));
 
     final file = File('pubspec.yaml');
@@ -108,6 +124,7 @@ class InitProjectCommand extends Command {
       'get': '^4.6.6',
       'dartz': '^0.10.1',
       'equatable': '^2.0.5',
+      if (httpLibrary == 'dio') 'dio': '^5.4.1',
     };
 
     int dependenciesLineIndex = -1;
