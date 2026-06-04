@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:test/test.dart';
+import 'package:args/command_runner.dart';
+import 'package:fast_clean_generator/src/commands/init_project_command.dart';
 import 'package:fast_clean_generator/src/generators/remote_data_generator.dart';
 import 'package:fast_clean_generator/src/generators/repository_generator.dart';
 import 'package:fast_clean_generator/src/generators/repository_impl_generator.dart';
@@ -344,6 +346,66 @@ void main() {
           reason: 'Should NOT delete existing list method');
       expect(updatedContent, contains('Future<void> addTask'),
           reason: 'Should ADD the new add method');
+    });
+
+    test(
+        'InitProjectCommand: should initialize project structure and core files',
+        () async {
+      final runner = CommandRunner('fcg', 'test')
+        ..addCommand(InitProjectCommand());
+
+      // The setUp already creates a dummy pubspec.yaml
+      await runner.run(['init']);
+
+      // Check directories
+      expect(Directory('lib/core/data/network').existsSync(), isTrue);
+      expect(Directory('lib/core/exceptions').existsSync(), isTrue);
+      expect(Directory('lib/core/routes').existsSync(), isTrue);
+      expect(Directory('lib/features').existsSync(), isTrue);
+
+      // Check core files
+      expect(File('lib/core/exceptions/failure.dart').existsSync(), isTrue);
+      expect(File('lib/core/use_case/use_case.dart').existsSync(), isTrue);
+      expect(File('lib/core/routes/app_pages.dart').existsSync(), isTrue);
+      expect(
+          File('lib/core/data/network/api_provider.dart').existsSync(), isTrue);
+
+      // Verify specific content (fix for previous bug in constructor name)
+      final failureContent =
+          File('lib/core/exceptions/failure.dart').readAsStringSync();
+      expect(failureContent, contains('class CacheFailure extends Failure {'));
+      expect(failureContent, contains('const CacheFailure(super.message);'));
+      expect(
+          failureContent,
+          isNot(contains(
+              'class CacheFailure extends Failure {\n  const ServerFailure')),
+          reason: 'CacheFailure constructor must match its class name');
+
+      // Check pubspec.yaml
+      final pubspecContent = File('pubspec.yaml').readAsStringSync();
+      expect(pubspecContent, contains('get:'));
+      expect(pubspecContent, contains('dartz:'));
+      expect(pubspecContent, contains('equatable:'));
+    });
+
+    test('InitProjectCommand: should NOT overwrite existing core files',
+        () async {
+      final runner = CommandRunner('fcg', 'test')
+        ..addCommand(InitProjectCommand());
+
+      // 1. Create a file manually before running init
+      final failurePath = 'lib/core/exceptions/failure.dart';
+      Directory('lib/core/exceptions').createSync(recursive: true);
+      const customContent = '// My Custom Failure Logic';
+      File(failurePath).writeAsStringSync(customContent);
+
+      // 2. Run init
+      await runner.run(['init']);
+
+      // 3. Verify content was preserved
+      final currentContent = File(failurePath).readAsStringSync();
+      expect(currentContent, equals(customContent),
+          reason: 'Init command should not overwrite existing core files');
     });
   });
 }
