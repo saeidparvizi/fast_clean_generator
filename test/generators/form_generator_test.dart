@@ -113,7 +113,8 @@ void main() {
       );
 
       expect(result, contains('keyboardType: TextInputType.number'));
-      expect(result, contains("_validateNumberField(value, 'Amount', 'double')"));
+      expect(
+          result, contains("_validateNumberField(value, 'Amount', 'double')"));
       expect(result, contains("_validateNumberField(value, 'Count', 'int')"));
     });
   });

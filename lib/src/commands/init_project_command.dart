@@ -32,7 +32,8 @@ class InitProjectCommand extends Command {
     print(TerminalStyle.info('Project Name: $projectName'));
 
     final httpLibrary = argResults?['http'] as String? ?? 'get';
-    print(TerminalStyle.info('Networking Library: ${httpLibrary.toUpperCase()}'));
+    print(
+        TerminalStyle.info('Networking Library: ${httpLibrary.toUpperCase()}'));
 
     // 1. Create Core Directories
     _createDirectories();

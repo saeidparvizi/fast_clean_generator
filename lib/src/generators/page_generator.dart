@@ -29,6 +29,12 @@ String generateListScreen({
   );
   buffer.writeln("import 'package:$projectName/core/routes/app_pages.dart';");
 
+  if (crudMethods.contains('delete')) {
+    buffer.writeln(
+      "import 'package:$projectName/features/$feature/presentation/widgets/delete_${snakeModel}_dialog.dart';",
+    );
+  }
+
   buffer.writeln();
 
   // Class definition برای صفحه لیست
@@ -82,9 +88,11 @@ String generateListScreen({
   );
   buffer.writeln('              return Card(');
   buffer.writeln('                elevation: 2,');
-  buffer.writeln('                margin: const EdgeInsets.symmetric(vertical: 4),');
+  buffer.writeln(
+      '                margin: const EdgeInsets.symmetric(vertical: 4),');
   buffer.writeln('                child: ListTile(');
-  buffer.writeln('                  title: Text(\'#\${$snakeModel.$idField}\'),');
+  buffer
+      .writeln('                  title: Text(\'#\${$snakeModel.$idField}\'),');
   buffer.writeln('                  subtitle: Text($snakeModel.toString()),');
   buffer.writeln('                  trailing: Row(');
   buffer.writeln('                  mainAxisSize: MainAxisSize.min,');
@@ -110,9 +118,10 @@ String generateListScreen({
 
   if (crudMethods.contains('delete')) {
     buffer.writeln('                    IconButton(');
-    buffer.writeln('                      icon: const Icon(Icons.delete),');
     buffer.writeln(
-      '                      onPressed: () => _showDeleteDialog(context, controller, $snakeModel),',
+        '                      icon: const Icon(Icons.delete, color: Colors.red),');
+    buffer.writeln(
+      '                      onPressed: () => showDelete${pascalModel}Dialog(context, $snakeModel.$idField, $snakeModel.toString()),',
     );
     buffer.writeln('                    ),');
   }
@@ -126,45 +135,6 @@ String generateListScreen({
   buffer.writeln('      ),');
   buffer.writeln('    );');
   buffer.writeln('  }');
-  buffer.writeln();
-
-  // Delete Dialog method
-  if (crudMethods.contains('delete')) {
-    buffer.writeln(
-      '  void _showDeleteDialog(BuildContext context, ${pluralPascalModel}Controller controller, ${pascalModel}Entity $snakeModel) {',
-    );
-    buffer.writeln('    showDialog(');
-    buffer.writeln('      context: context,');
-    buffer.writeln('      builder: (context) => AlertDialog(');
-    buffer.writeln('        title: const Text(\'Delete $pascalModel\'),');
-    buffer.writeln(
-      '        content: Text(\'Are you sure you want to delete \\"\${$snakeModel.toString()}\\"?\'),',
-    );
-    buffer.writeln('        actions: [');
-    buffer.writeln('          TextButton(');
-    buffer.writeln('            onPressed: () => Get.back(),');
-    buffer.writeln('            child: const Text(\'Cancel\'),');
-    buffer.writeln('          ),');
-    buffer.writeln('          ElevatedButton(');
-    buffer.writeln('            style: ElevatedButton.styleFrom(');
-    buffer.writeln('              backgroundColor: Colors.red,');
-    buffer.writeln('            ),');
-    buffer.writeln('            onPressed: () {');
-    buffer.writeln(
-      '              controller.delete$pascalModel($snakeModel.$idField!);',
-    );
-    buffer.writeln('              Get.back();');
-    buffer.writeln('            },');
-    buffer.writeln(
-      '            child: const Text(\'Delete\', style: TextStyle(color: Colors.white)),',
-    );
-    buffer.writeln('          ),');
-    buffer.writeln('        ],');
-    buffer.writeln('      ),');
-    buffer.writeln('    );');
-    buffer.writeln('  }');
-  }
-
   buffer.writeln('}');
 
   return buffer.toString();
@@ -271,7 +241,8 @@ String generateSingleScreen({
     final camelKey = toCamel(key);
     final title = toTitleCase(key);
 
-    buffer.writeln('                _buildDetailRow(\'$title\', \${${snakeModel}Data.$camelKey?.toString() ?? "N/A"}),');
+    buffer.writeln(
+        '                _buildDetailRow(\'$title\', \${${snakeModel}Data.$camelKey?.toString() ?? "N/A"}),');
   });
 
   buffer.writeln('              ],');
@@ -288,8 +259,10 @@ String generateSingleScreen({
   buffer.writeln('      child: Row(');
   buffer.writeln('        crossAxisAlignment: CrossAxisAlignment.start,');
   buffer.writeln('        children: [');
-  buffer.writeln('          Text(\'\$label: \', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),');
-  buffer.writeln('          Expanded(child: Text(value, style: const TextStyle(fontSize: 16))),');
+  buffer.writeln(
+      '          Text(\'\$label: \', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),');
+  buffer.writeln(
+      '          Expanded(child: Text(value, style: const TextStyle(fontSize: 16))),');
   buffer.writeln('        ],');
   buffer.writeln('      ),');
   buffer.writeln('    );');

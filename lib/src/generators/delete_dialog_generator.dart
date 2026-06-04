@@ -34,10 +34,12 @@ String generateDeleteDialog({
   buffer.writeln('  @override');
   buffer.writeln('  Widget build(BuildContext context) {');
   buffer.writeln('    return AlertDialog(');
-  buffer.writeln('      icon: const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 40),');
+  buffer.writeln(
+      '      icon: const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 40),');
   buffer.writeln('      title: Text(\'Delete $pascalModel\'),');
   buffer.writeln('      content: Text(');
-  buffer.writeln('        \'Are you sure you want to delete \\"\$name\\"?\\nThis action cannot be undone.\',');
+  buffer.writeln(
+      '        \'Are you sure you want to delete \\"\$name\\"?\\nThis action cannot be undone.\',');
   buffer.writeln('        textAlign: TextAlign.center,');
   buffer.writeln('      ),');
   buffer.writeln('      actionsAlignment: MainAxisAlignment.spaceEvenly,');
@@ -52,7 +54,8 @@ String generateDeleteDialog({
   buffer.writeln('            foregroundColor: Colors.white,');
   buffer.writeln('          ),');
   buffer.writeln('          onPressed: () {');
-  buffer.writeln('            Get.find<${pluralPascal}Controller>().delete$pascalModel(id);');
+  buffer.writeln(
+      '            Get.find<${pluralPascal}Controller>().delete$pascalModel(id);');
   buffer.writeln('            Get.back();');
   buffer.writeln('          },');
   buffer.writeln('          child: const Text(\'Delete\'),');

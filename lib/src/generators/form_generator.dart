@@ -465,7 +465,8 @@ String _getFieldType(dynamic value) {
 }
 
 bool _isNestedField(dynamic value) {
-  return value is Map || (value is List && value.isNotEmpty && value.first is Map);
+  return value is Map ||
+      (value is List && value.isNotEmpty && value.first is Map);
 }
 
 bool _hasDateTimeField(Map<String, dynamic> fields) {
