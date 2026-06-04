@@ -8,7 +8,8 @@ class CreateProjectCommand extends Command {
   String get name => 'create';
 
   @override
-  String get description => 'Creates a new Flutter project and initializes it with Clean Architecture.';
+  String get description =>
+      'Creates a new Flutter project and initializes it with Clean Architecture.';
 
   @override
   String get invocation => 'fcg create <project_name> [options]';
@@ -46,9 +47,10 @@ class CreateProjectCommand extends Command {
     Directory.current = Directory('${Directory.current.path}/$projectName');
 
     // 3. Run the Init logic
-    print(TerminalStyle.bold('\n🛠️ Initializing Clean Architecture layers...'));
+    print(
+        TerminalStyle.bold('\n🛠️ Initializing Clean Architecture layers...'));
     final initCommand = InitProjectCommand();
-    
+
     // We manually trigger the run logic of init command
     await initCommand.run();
 
@@ -62,7 +64,8 @@ class CreateProjectCommand extends Command {
     argParser.addOption(
       'org',
       abbr: 'o',
-      help: 'The organization responsible for your new Flutter project, in reverse domain name notation.',
+      help:
+          'The organization responsible for your new Flutter project, in reverse domain name notation.',
       valueHelp: 'com.example',
     );
   }

@@ -86,6 +86,12 @@ class InitProjectCommand extends Command {
       await writeFile(entry.key, entry.value);
       print(TerminalStyle.success('  ✓ Generated: ${entry.key}'));
     }
+
+    // Special handling for main.dart (we want to overwrite the default Flutter main.dart)
+    final mainDartPath = 'lib/main.dart';
+    await writeFile(mainDartPath, CoreGenerator.generateMainDart());
+    print(TerminalStyle.success(
+        '  ✓ Updated: $mainDartPath (Set up GetMaterialApp)'));
   }
 
   Future<void> _updatePubspec() async {

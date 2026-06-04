@@ -371,6 +371,12 @@ void main() {
           File('lib/core/data/network/api_provider.dart').existsSync(), isTrue);
       expect(File('lib/core/widgets/input.dart').existsSync(), isTrue);
       expect(File('lib/core/widgets/appbar.dart').existsSync(), isTrue);
+      expect(File('lib/main.dart').existsSync(), isTrue);
+
+      // Verify main.dart content
+      final mainContent = File('lib/main.dart').readAsStringSync();
+      expect(mainContent, contains('GetMaterialApp'));
+      expect(mainContent, contains('AppPages.initialRoutes'));
 
       // Verify specific content (fix for previous bug in constructor name)
       final failureContent =
