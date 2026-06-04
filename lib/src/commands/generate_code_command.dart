@@ -7,6 +7,7 @@ import 'package:fast_clean_generator/src/generate_code.dart';
 import 'package:fast_clean_generator/src/models/generate_options.dart';
 import 'package:fast_clean_generator/src/exceptions/generator_exception.dart';
 import '../helpers/naming_helpers.dart';
+import '../helpers/terminal_style.dart';
 
 class GenerateCodeCommand extends Command {
   @override
@@ -32,7 +33,7 @@ class GenerateCodeCommand extends Command {
         r' |_|   \__,_|___/\__|  \____/_|\___|\__,_|_| |_|     '));
     print('');
     print(TerminalStyle.bold(
-        '   C L E A N   A R C H   G E N E R A T O R  [V1.0.4]'));
+        '   C L E A N   A R C H   G E N E R A T O R  [V1.1.0]'));
     print('');
 
     // ──────────────────────────────────────────────
@@ -307,28 +308,4 @@ class GenerateCodeCommand extends Command {
       generateRoute: optionsMap['Route']!,
     );
   }
-}
-
-// ──────────────────────────────────────
-// Terminal style helper (keeps colors in console)
-// ──────────────────────────────────────
-class TerminalStyle {
-  TerminalStyle._();
-
-  static const String reset = '\x1B[0m';
-  static const String boldColor = '\x1B[1m';
-  static const String red = '\x1B[31m';
-  static const String green = '\x1B[32m';
-  static const String yellow = '\x1B[33m';
-  static const String cyan = '\x1B[36m';
-
-  static String success(String msg) => '$green$msg$reset';
-
-  static String error(String msg) => '$red$msg$reset';
-
-  static String info(String msg) => '$cyan$msg$reset';
-
-  static String warning(String msg) => '$yellow$msg$reset';
-
-  static String bold(String msg) => '$boldColor$msg$reset';
 }
