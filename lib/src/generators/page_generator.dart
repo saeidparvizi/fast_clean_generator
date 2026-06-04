@@ -101,7 +101,8 @@ String generateListScreen({
 
   if (crudMethods.contains('get')) {
     buffer.writeln('                      IconButton(');
-    buffer.writeln('                        icon: const Icon(Icons.visibility),');
+    buffer
+        .writeln('                        icon: const Icon(Icons.visibility),');
     buffer.writeln(
       '                        onPressed: () => Get.toNamed(AppRoutes.$snakeModel, parameters: {\'id\': $snakeModel.$idField.toString()}),',
     );

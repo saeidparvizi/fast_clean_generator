@@ -39,8 +39,12 @@ void main() {
         jsonSchema: jsonSchema,
       );
 
-      expect(result, contains('void _showDeleteDialog(BuildContext context'));
-      expect(result, contains('controller.deleteTask(task.id!);'));
+      // Now it should call the external showDeleteTaskDialog function
+      expect(result,
+          contains('showDeleteTaskDialog(context, task.id, task.toString())'));
+      // And it should NOT have the internal _showDeleteDialog method anymore
+      expect(result,
+          isNot(contains('void _showDeleteDialog(BuildContext context')));
     });
 
     test('generateSingleScreen displays fields from jsonSchema', () {
@@ -55,9 +59,15 @@ void main() {
 
       expect(
           result, contains('class TaskScreen extends GetView<TaskController>'));
-      expect(result, contains("'Id: \${taskData.id?.toString() ?? \"N/A\"}'"));
-      expect(result,
-          contains("'Title: \${taskData.title?.toString() ?? \"N/A\"}'"));
+      // Now it uses the _buildDetailRow helper method
+      expect(
+          result,
+          contains(
+              "_buildDetailRow('Id', taskData.id?.toString() ?? \"N/A\")"));
+      expect(
+          result,
+          contains(
+              "_buildDetailRow('Title', taskData.title?.toString() ?? \"N/A\")"));
     });
   });
 }

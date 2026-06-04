@@ -60,6 +60,7 @@ class InitProjectCommand extends Command {
       'lib/core/utils',
       'lib/core/widgets',
       'lib/core/theme',
+      'lib/core/translations',
       'lib/features',
     ];
 
@@ -94,6 +95,9 @@ class InitProjectCommand extends Command {
       'lib/core/widgets/appbar.dart': CoreGenerator.generateAppAppbar(),
       'lib/core/theme/app_colors.dart': CoreGenerator.generateAppColors(),
       'lib/core/theme/app_theme.dart': CoreGenerator.generateAppTheme(),
+      'lib/core/translations/app_translations.dart':
+          CoreGenerator.generateAppTranslations(),
+      'lib/core/translations/en_us.dart': CoreGenerator.generateEnUs(),
     };
 
     for (final entry in files.entries) {

@@ -278,6 +278,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'core/routes/app_pages.dart';
 import 'core/theme/app_theme.dart';
+import 'core/translations/app_translations.dart';
 
 void main() {
   runApp(const MyApp());
@@ -293,12 +294,42 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
+      translations: AppTranslations(),
+      locale: Get.deviceLocale,
+      fallbackLocale: const Locale('en', 'US'),
       initialRoute: AppPages.initialRoutes,
       getPages: AppPages.pages,
       debugShowCheckedModeBanner: false,
     );
   }
 }
+''';
+  }
+
+  static String generateAppTranslations() {
+    return '''
+import 'package:get/get.dart';
+import 'en_us.dart';
+
+class AppTranslations extends Translations {
+  @override
+  Map<String, Map<String, String>> get keys => {
+        'en_US': enUs,
+      };
+}
+''';
+  }
+
+  static String generateEnUs() {
+    return '''
+const Map<String, String> enUs = {
+  'app_title': 'Flutter Clean Arch',
+  'success': 'Success',
+  'error': 'Error',
+  'cancel': 'Cancel',
+  'delete': 'Delete',
+  'submit': 'Submit',
+};
 ''';
   }
 
