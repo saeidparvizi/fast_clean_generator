@@ -124,6 +124,71 @@ class ApiHelper {
 ''';
   }
 
+  static String generateAppInput() {
+    return '''
+import 'package:flutter/material.dart';
+
+class AppInput extends StatelessWidget {
+  final TextEditingController controller;
+  final String labelText;
+  final TextInputType? keyboardType;
+  final String? Function(String?)? validator;
+  final bool obscureText;
+
+  const AppInput({
+    required this.controller,
+    required this.labelText,
+    this.keyboardType,
+    this.validator,
+    this.obscureText = false,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: const OutlineInputBorder(),
+      ),
+      keyboardType: keyboardType,
+      validator: validator,
+      obscureText: obscureText,
+    );
+  }
+}
+''';
+  }
+
+  static String generateAppAppbar() {
+    return '''
+import 'package:flutter/material.dart';
+
+class AppAppbar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+  final List<Widget>? actions;
+
+  const AppAppbar({
+    required this.title,
+    this.actions,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(title),
+      actions: actions,
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+''';
+  }
+
   static String generateInitialAppRoutes() {
     return '''
 part of 'app_pages.dart';

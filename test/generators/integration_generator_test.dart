@@ -369,6 +369,8 @@ void main() {
       expect(File('lib/core/routes/app_pages.dart').existsSync(), isTrue);
       expect(
           File('lib/core/data/network/api_provider.dart').existsSync(), isTrue);
+      expect(File('lib/core/widgets/input.dart').existsSync(), isTrue);
+      expect(File('lib/core/widgets/appbar.dart').existsSync(), isTrue);
 
       // Verify specific content (fix for previous bug in constructor name)
       final failureContent =
