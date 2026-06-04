@@ -74,14 +74,19 @@ String generateListScreen({
   buffer.writeln('          }');
   buffer.writeln();
   buffer.writeln('          return ListView.builder(');
+  buffer.writeln('            padding: const EdgeInsets.all(8),');
   buffer.writeln('            itemCount: controller.$pluralSnakeModel.length,');
   buffer.writeln('            itemBuilder: (context, index) {');
   buffer.writeln(
     '              final $snakeModel = controller.$pluralSnakeModel[index];',
   );
-  buffer.writeln('              return ListTile(');
-  buffer.writeln('                title: Text($snakeModel.toString()),');
-  buffer.writeln('                trailing: Row(');
+  buffer.writeln('              return Card(');
+  buffer.writeln('                elevation: 2,');
+  buffer.writeln('                margin: const EdgeInsets.symmetric(vertical: 4),');
+  buffer.writeln('                child: ListTile(');
+  buffer.writeln('                  title: Text(\'#\${$snakeModel.$idField}\'),');
+  buffer.writeln('                  subtitle: Text($snakeModel.toString()),');
+  buffer.writeln('                  trailing: Row(');
   buffer.writeln('                  mainAxisSize: MainAxisSize.min,');
   buffer.writeln('                  children: [');
 
@@ -266,19 +271,26 @@ String generateSingleScreen({
     final camelKey = toCamel(key);
     final title = toTitleCase(key);
 
-    buffer.writeln('                Text(');
-    buffer.writeln(
-      '                  \'$title: \${${snakeModel}Data.$camelKey?.toString() ?? "N/A"}\',',
-    );
-    buffer.writeln('                  style: const TextStyle(fontSize: 16),');
-    buffer.writeln('                ),');
-    buffer.writeln('                const SizedBox(height: 8),');
+    buffer.writeln('                _buildDetailRow(\'$title\', \${${snakeModel}Data.$camelKey?.toString() ?? "N/A"}),');
   });
 
   buffer.writeln('              ],');
   buffer.writeln('            ),');
   buffer.writeln('          );');
   buffer.writeln('        },');
+  buffer.writeln('      ),');
+  buffer.writeln('    );');
+  buffer.writeln('  }');
+  buffer.writeln();
+  buffer.writeln('  Widget _buildDetailRow(String label, String value) {');
+  buffer.writeln('    return Padding(');
+  buffer.writeln('      padding: const EdgeInsets.symmetric(vertical: 8.0),');
+  buffer.writeln('      child: Row(');
+  buffer.writeln('        crossAxisAlignment: CrossAxisAlignment.start,');
+  buffer.writeln('        children: [');
+  buffer.writeln('          Text(\'\$label: \', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),');
+  buffer.writeln('          Expanded(child: Text(value, style: const TextStyle(fontSize: 16))),');
+  buffer.writeln('        ],');
   buffer.writeln('      ),');
   buffer.writeln('    );');
   buffer.writeln('  }');
