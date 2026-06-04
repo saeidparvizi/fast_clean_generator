@@ -64,7 +64,7 @@ String _createNewAppPagesFile(
   buffer.writeln('  AppPages._();');
   buffer.writeln();
   buffer.writeln('  static String get initialRoutes {');
-  buffer.writeln('    return AppRoutes.main + AppRoutes.home;');
+  buffer.writeln('    return AppRoutes.unknown;');
   buffer.writeln('  }');
   buffer.writeln();
   buffer.writeln('  static List<GetPage> get pages => [');

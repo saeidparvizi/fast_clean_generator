@@ -48,8 +48,7 @@ class NoParams {}
   static String generateRepositoryExecutor() {
     return '''
 import 'package:dartz/dartz.dart';
-import '../exceptions/failure.dart';
-import '../exceptions/server_exception.dart';
+import '../exceptions/failure.dart'; import '../exceptions/server_exception.dart';
 
 class RepositoryExecutor {
   Future<Either<Failure, T>> execute<T>(Future<T> Function() call) async {
