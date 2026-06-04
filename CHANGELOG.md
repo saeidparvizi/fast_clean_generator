@@ -1,3 +1,11 @@
+## 1.1.0
+
+- **New `init` Command**: Scaffolds a full Clean Architecture project structure with essential core files (`BaseUseCase`, `Failure`, `RepositoryExecutor`, etc.).
+- **Recursive Class Generation**: Automatically generates all nested Entities and Models from a single JSON schema.
+- **Safe Generation Engine**: The `init` command now detects existing files and skips them to protect your custom logic.
+- **Smart Primitive Lists**: Full support for basic type lists (`List<String>`, `List<int>`, etc.) in code generation.
+- **Enhanced Reliability**: Improved regex-based code injection for Bindings and Controllers to ensure perfect syntax during incremental updates.
+
 ## 1.0.5
 
 - **Fixed Critical Re-generation Bug**: Bindings and Controllers now correctly merge new parameters and methods without breaking syntax or losing existing code.

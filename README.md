@@ -10,7 +10,9 @@ A powerful, interactive CLI tool designed to accelerate Flutter development by g
 
 ## ✨ Features
 
+- 🚀 **New: Project Initialization**: Instantly scaffold a full Clean Architecture base (`init` command).
 - 🏗️ **Complete Layer Generation**: Automatically creates Domain, Data, and Presentation layers.
+- 🧠 **Recursive Class Generation**: Automatically generates nested Entities and Models from a single complex JSON.
 - 🎮 **Smart GetX Integration**: 
     - Generates **Plural Controllers** for list management.
     - Generates **Singular Controllers** for item details and editing.
@@ -18,8 +20,8 @@ A powerful, interactive CLI tool designed to accelerate Flutter development by g
 - 📦 **CRUD Support**: Choose which operations you need (List, Get, Add, Update, Delete).
 - 📝 **JSON to Model**: Converts your JSON schema into robust Entities and Models with `fromJson`/`toJson`.
 - 🛣️ **Smart Routing**: Automatically updates your application routes and pages.
-- 💻 **Interactive CLI**: Friendly prompts to guide you through the feature creation process.
-- ✅ **Enterprise Ready**: Includes comprehensive Unit and Integration tests.
+- 💻 **Interactive CLI**: Friendly prompts to guide you through the process.
+- ✅ **Safe Generation**: Protects your custom code by not overwriting existing core files.
 
 ---
 
@@ -31,25 +33,23 @@ To use `fast_clean_generator` globally on your machine, run:
 dart pub global activate fast_clean_generator
 ```
 
-*(Or if installing directly from GitHub during development)*
-```bash
-dart pub global activate --source git https://github.com/saeidparvizi/clean_arch_generator
-```
-
-Make sure your `dart` path is configured correctly in your system's environment variables.
-
 ---
 
-## 🚀 How to Use
+## 🚀 Getting Started
 
-1. Go to your Flutter project root.
-2. Run the generator command:
+### 1. Initialize Your Project
+Before generating features, set up the standard Clean Architecture folders and core files:
 
 ```bash
-# You can use either the full command or the short alias:
-fast_clean_gen generate
+# Navigate to your Flutter project root
+fcg init
+```
+This command creates the `core` structure, essential base classes (`BaseUseCase`, `Failure`, etc.), and adds required dependencies (`get`, `dartz`, `equatable`) to your `pubspec.yaml`.
 
-# OR simply:
+### 2. Generate a Feature
+Once initialized, you can start generating full-stack modules:
+
+```bash
 fcg generate
 ```
 
@@ -108,7 +108,7 @@ Save this as `model.json` to test the generator:
 
 This project is built with stability in mind:
 - **Linting**: Strictly follows Dart's recommended analysis options.
-- **Testing**: 35+ Unit and Integration tests covering naming logic, JSON parsing, and code generation.
+- **Testing**: 45+ Unit and Integration tests covering naming logic, recursive JSON parsing, and incremental code generation.
 - **CI/CD**: Automated GitHub Actions to verify every commit.
 
 ---
