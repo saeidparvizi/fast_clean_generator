@@ -277,6 +277,7 @@ class AppPages {
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'core/routes/app_pages.dart';
+import 'core/theme/app_theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -289,15 +290,69 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Flutter Clean Arch',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       initialRoute: AppPages.initialRoutes,
       getPages: AppPages.pages,
       debugShowCheckedModeBanner: false,
     );
   }
+}
+''';
+  }
+
+  static String generateAppColors() {
+    return '''
+import 'package:flutter/material.dart';
+
+class AppColors {
+  AppColors._();
+
+  static const primary = Color(0xFF6200EE);
+  static const primaryVariant = Color(0xFF3700B3);
+  static const secondary = Color(0xFF03DAC6);
+  static const background = Color(0xFFF5F5F5);
+  static const surface = Colors.white;
+  static const error = Color(0xFFB00020);
+  
+  static const textPrimary = Color(0xFF000000);
+  static const textSecondary = Color(0xFF757575);
+}
+''';
+  }
+
+  static String generateAppTheme() {
+    return '''
+import 'package:flutter/material.dart';
+import 'app_colors.dart';
+
+class AppTheme {
+  AppTheme._();
+
+  static final lightTheme = ThemeData(
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.primary,
+      primary: AppColors.primary,
+      secondary: AppColors.secondary,
+      error: AppColors.error,
+      surface: AppColors.surface,
+    ),
+    appBarTheme: const AppBarTheme(
+      centerTitle: true,
+      elevation: 0,
+    ),
+  );
+
+  static final darkTheme = ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.primary,
+      brightness: Brightness.dark,
+    ),
+  );
 }
 ''';
   }
