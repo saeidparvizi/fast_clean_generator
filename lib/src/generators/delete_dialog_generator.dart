@@ -22,8 +22,7 @@ String generateDeleteDialog({
 
   // Class definition
   buffer.writeln('class Delete${pascalModel}Dialog extends StatelessWidget {');
-  buffer.writeln(
-      '  final dynamic id;'); // Use dynamic to handle different ID types
+  buffer.writeln('  final dynamic id;');
   buffer.writeln('  final String name;');
   buffer.writeln();
   buffer.writeln('  const Delete${pascalModel}Dialog({');
@@ -35,10 +34,13 @@ String generateDeleteDialog({
   buffer.writeln('  @override');
   buffer.writeln('  Widget build(BuildContext context) {');
   buffer.writeln('    return AlertDialog(');
-  buffer.writeln('      title: const Text(\'Delete $pascalModel\'),');
-  buffer.writeln(
-    '      content: Text(\'Are you sure you want to delete \\"\$name\\"?\'),',
-  );
+  buffer.writeln('      icon: const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 40),');
+  buffer.writeln('      title: Text(\'Delete $pascalModel\'),');
+  buffer.writeln('      content: Text(');
+  buffer.writeln('        \'Are you sure you want to delete \\"\$name\\"?\\nThis action cannot be undone.\',');
+  buffer.writeln('        textAlign: TextAlign.center,');
+  buffer.writeln('      ),');
+  buffer.writeln('      actionsAlignment: MainAxisAlignment.spaceEvenly,');
   buffer.writeln('      actions: [');
   buffer.writeln('        TextButton(');
   buffer.writeln('          onPressed: () => Get.back(),');
@@ -47,16 +49,13 @@ String generateDeleteDialog({
   buffer.writeln('        ElevatedButton(');
   buffer.writeln('          style: ElevatedButton.styleFrom(');
   buffer.writeln('            backgroundColor: Colors.red,');
+  buffer.writeln('            foregroundColor: Colors.white,');
   buffer.writeln('          ),');
   buffer.writeln('          onPressed: () {');
-  buffer.writeln(
-    '            Get.find<${pluralPascal}Controller>().delete$pascalModel(id);',
-  );
+  buffer.writeln('            Get.find<${pluralPascal}Controller>().delete$pascalModel(id);');
   buffer.writeln('            Get.back();');
   buffer.writeln('          },');
-  buffer.writeln(
-    '          child: const Text(\'Delete\', style: TextStyle(color: Colors.white)),',
-  );
+  buffer.writeln('          child: const Text(\'Delete\'),');
   buffer.writeln('        ),');
   buffer.writeln('      ],');
   buffer.writeln('    );');
