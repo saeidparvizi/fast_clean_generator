@@ -154,13 +154,13 @@ String generateForm({
     final isNested = _isNestedField(value);
 
     if (type == 'bool') {
-      // Checkbox برای boolean
-      buffer.writeln('            CheckboxListTile(');
+      // Switch برای boolean (smart feel)
+      buffer.writeln('            SwitchListTile(');
       buffer.writeln('              title: Text(\'$label\'),');
       buffer.writeln('              value: _${camelKey}Value,');
       buffer.writeln('              onChanged: (value) {');
       buffer.writeln('                setState(() {');
-      buffer.writeln('                  _${camelKey}Value = value ?? false;');
+      buffer.writeln('                  _${camelKey}Value = value;');
       buffer.writeln('                });');
       buffer.writeln('              },');
       buffer.writeln('            ),');
@@ -447,6 +447,14 @@ String _getFieldType(dynamic value) {
   if (value is bool) {
     return 'bool';
   }
+  if (value is String) {
+    // Check if it's a date string (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)
+    final dateRegex = RegExp(r'^\d{4}-\d{2}-\d{2}');
+    if (dateRegex.hasMatch(value)) {
+      return 'DateTime';
+    }
+    return 'String';
+  }
   if (value is Map) {
     return 'Map';
   }
@@ -457,11 +465,11 @@ String _getFieldType(dynamic value) {
 }
 
 bool _isNestedField(dynamic value) {
-  return value is Map || (value is List && value.isNotEmpty);
+  return value is Map || (value is List && value.isNotEmpty && value.first is Map);
 }
 
 bool _hasDateTimeField(Map<String, dynamic> fields) {
-  return false;
+  return fields.values.any((value) => _getFieldType(value) == 'DateTime');
 }
 
 bool _hasNestedField(Map<String, dynamic> fields) {

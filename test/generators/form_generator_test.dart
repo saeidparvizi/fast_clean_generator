@@ -34,7 +34,7 @@ void main() {
           contains(
               'final TextEditingController _priorityController = TextEditingController();'));
 
-      // Due date should now be a regular TextEditingController since it's a String
+      // Due date should now be a regular TextEditingController since it's a DateTime type
       expect(
           result,
           contains(
@@ -65,9 +65,9 @@ void main() {
       expect(result, contains('title: _titleController.text,'));
     });
 
-    test('generateForm treats dates as regular text fields', () {
+    test('Smart Forms: should use SwitchListTile for boolean values', () {
       final jsonSchema = {
-        'due_date': '2023-12-31',
+        'is_active': true,
       };
 
       final result = generateForm(
@@ -77,15 +77,44 @@ void main() {
         jsonSchema: jsonSchema,
       );
 
-      // Should NOT include date picker logic anymore
-      expect(
-          result,
-          isNot(contains(
-              'Future<void> _selectDate(BuildContext context, String fieldName) async')));
-      expect(result, isNot(contains('InkWell(')));
+      expect(result, contains('SwitchListTile('));
+      expect(result, contains("title: Text('Is Active')"));
+      expect(result, contains('value: _isActiveValue'));
+    });
 
-      // Should include regular AppInput for the date
-      expect(result, contains('labelText: \'Due Date\''));
+    test('Smart Forms: should use date picker for date-like strings', () {
+      final jsonSchema = {
+        'start_date': '2023-01-01',
+      };
+
+      final result = generateForm(
+        className: className,
+        feature: feature,
+        projectName: projectName,
+        jsonSchema: jsonSchema,
+      );
+
+      expect(result, contains('InkWell('));
+      expect(result, contains("_selectDate(context, 'startDate')"));
+      expect(result, contains('Icons.calendar_today'));
+    });
+
+    test('Smart Forms: should use numeric keyboard for numbers', () {
+      final jsonSchema = {
+        'amount': 100.5,
+        'count': 10,
+      };
+
+      final result = generateForm(
+        className: className,
+        feature: feature,
+        projectName: projectName,
+        jsonSchema: jsonSchema,
+      );
+
+      expect(result, contains('keyboardType: TextInputType.number'));
+      expect(result, contains("_validateNumberField(value, 'Amount', 'double')"));
+      expect(result, contains("_validateNumberField(value, 'Count', 'int')"));
     });
   });
 }
