@@ -48,7 +48,7 @@ String generateListScreen({
   buffer.writeln('  Widget build(BuildContext context) {');
   buffer.writeln('    return Scaffold(');
   buffer.writeln('      appBar: AppAppbar(');
-  buffer.writeln('        label: \'$pluralPascalModel\',');
+  buffer.writeln('        title: \'$pluralPascalModel\',');
 
   if (crudMethods.contains('add')) {
     buffer.writeln('        actions: [');
@@ -189,7 +189,7 @@ String generateSingleScreen({
   buffer.writeln('  Widget build(BuildContext context) {');
   buffer.writeln('    return Scaffold(');
   buffer.writeln('      appBar: AppAppbar(');
-  buffer.writeln('        label: \'$pascalModel Details\',');
+  buffer.writeln('        title: \'$pascalModel Details\',');
   buffer.writeln('        leading: IconButton(');
   buffer.writeln('          icon: const Icon(Icons.arrow_back),');
   buffer.writeln('          onPressed: () => Get.back(),');

@@ -220,15 +220,16 @@ class BindingGenerator {
 
   static void _writeHeader(
       StringBuffer buffer, String projectName, String feature) {
+    final snakeFeature = toSnakeFromName(feature);
     buffer.writeln("import 'package:get/get.dart';");
     buffer.writeln(
         "import 'package:$projectName/core/utils/repository_executor.dart';");
     buffer.writeln(
-        "import 'package:$projectName/features/$feature/data/data_sources/${feature}_remote_data.dart';");
+        "import 'package:$projectName/features/$feature/data/data_sources/${snakeFeature}_remote_data.dart';");
     buffer.writeln(
-        "import 'package:$projectName/features/$feature/data/repositories/${feature}_repository_impl.dart';");
+        "import 'package:$projectName/features/$feature/data/repositories/${snakeFeature}_repository_impl.dart';");
     buffer.writeln(
-        "import 'package:$projectName/features/$feature/domain/repositories/${feature}_repository.dart';");
+        "import 'package:$projectName/features/$feature/domain/repositories/${snakeFeature}_repository.dart';");
   }
 
   static List<String> _getModelImports(String projectName, String feature,
@@ -236,7 +237,7 @@ class BindingGenerator {
     final snakeModel = toSnakeFromName(model);
     final pluralSnake = toSnakeFromName(pluralize(model));
     final imports = [
-      "import 'package:$projectName/features/$feature/presentation/controllers/${snakeModel}s_controller.dart';",
+      "import 'package:$projectName/features/$feature/presentation/controllers/${pluralSnake}_controller.dart';",
       if (crudMethods.contains('get') || crudMethods.contains('update'))
         "import 'package:$projectName/features/$feature/presentation/controllers/${snakeModel}_controller.dart';",
     ];

@@ -78,7 +78,7 @@ class InitProjectCommand extends Command {
       'lib/core/exceptions/failure.dart': CoreGenerator.generateFailure(),
       'lib/core/exceptions/server_exception.dart':
           CoreGenerator.generateServerException(),
-      'lib/core/use_case/use_case.dart': CoreGenerator.generateUseCase(),
+      'lib/core/use_case/base_use_case.dart': CoreGenerator.generateUseCase(),
       'lib/core/utils/repository_executor.dart':
           CoreGenerator.generateRepositoryExecutor(),
       'lib/core/utils/utils.dart': CoreGenerator.generateUtils(),

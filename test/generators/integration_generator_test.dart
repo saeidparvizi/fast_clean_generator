@@ -395,7 +395,7 @@ void main() {
 
       // Check core files
       expect(File('lib/core/exceptions/failure.dart').existsSync(), isTrue);
-      expect(File('lib/core/use_case/use_case.dart').existsSync(), isTrue);
+      expect(File('lib/core/use_case/base_use_case.dart').existsSync(), isTrue);
       expect(File('lib/core/routes/app_pages.dart').existsSync(), isTrue);
       expect(
           File('lib/core/data/network/api_provider.dart').existsSync(), isTrue);
@@ -406,7 +406,7 @@ void main() {
       // Verify main.dart content
       final mainContent = File('lib/main.dart').readAsStringSync();
       expect(mainContent, contains('GetMaterialApp'));
-      expect(mainContent, contains('AppPages.initialRoutes'));
+      expect(mainContent, contains('AppPages.initialRoute'));
 
       // Verify specific content (fix for previous bug in constructor name)
       final failureContent =
@@ -453,11 +453,13 @@ void main() {
       await runner.run(['init', '--http=dio']);
 
       // Check core files for Dio implementation
-      final providerContent = File('lib/core/data/network/api_provider.dart').readAsStringSync();
+      final providerContent =
+          File('lib/core/data/network/api_provider.dart').readAsStringSync();
       expect(providerContent, contains("import 'package:dio/dio.dart';"));
       expect(providerContent, contains("final Dio dio;"));
 
-      final helperContent = File('lib/core/helpers/api_helper.dart').readAsStringSync();
+      final helperContent =
+          File('lib/core/helpers/api_helper.dart').readAsStringSync();
       expect(helperContent, contains("import 'package:dio/dio.dart';"));
       expect(helperContent, contains("on DioException catch (e)"));
 
@@ -494,19 +496,30 @@ void main() {
       );
 
       // 1. Check Reserved Keyword Handling
-      final entityContent = File('lib/features/inventory/domain/entities/asset_entity.dart').readAsStringSync();
-      expect(entityContent, contains('final String? classValue;'), reason: 'Keyword "class" should be escaped to classValue');
+      final entityContent =
+          File('lib/features/inventory/domain/entities/asset_entity.dart')
+              .readAsStringSync();
+      expect(entityContent, contains('final String? classValue;'),
+          reason: 'Keyword "class" should be escaped to classValue');
 
       // 2. Check Primitive List Handling
       expect(entityContent, contains('final List<String>? tags;'));
 
       // 3. Check Recursive Generation
-      expect(File('lib/features/inventory/domain/entities/owner_entity.dart').existsSync(), isTrue);
-      expect(File('lib/features/inventory/domain/entities/details_entity.dart').existsSync(), isTrue);
+      expect(
+          File('lib/features/inventory/domain/entities/owner_entity.dart')
+              .existsSync(),
+          isTrue);
+      expect(
+          File('lib/features/inventory/domain/entities/details_entity.dart')
+              .existsSync(),
+          isTrue);
 
       // 4. Check syntax validity of everything
-      final formatResult = await Process.run('dart', ['format', '--output=none', 'lib/features/inventory']);
-      expect(formatResult.exitCode, isNot(65), reason: 'Stress test generated code has syntax errors');
+      final formatResult = await Process.run(
+          'dart', ['format', '--output=none', 'lib/features/inventory']);
+      expect(formatResult.exitCode, isNot(65),
+          reason: 'Stress test generated code has syntax errors');
     });
   });
 }

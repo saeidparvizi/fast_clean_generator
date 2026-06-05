@@ -16,6 +16,7 @@ String generateAddScreen({
   // Imports
   buffer.writeln("import 'package:flutter/material.dart';");
   buffer.writeln("import 'package:get/get.dart';");
+  buffer.writeln("import 'package:$projectName/core/widgets/appbar.dart';");
   buffer.writeln(
     "import 'package:$projectName/features/$feature/presentation/controllers/${pluralSnakeModel}_controller.dart';",
   );
@@ -32,8 +33,8 @@ String generateAddScreen({
   buffer.writeln('  @override');
   buffer.writeln('  Widget build(BuildContext context) {');
   buffer.writeln('    return Scaffold(');
-  buffer.writeln('      appBar: AppBar(');
-  buffer.writeln('        title: const Text(\'Add $pascalModel\'),');
+  buffer.writeln('      appBar: AppAppbar(');
+  buffer.writeln('        title: \'Add $pascalModel\',');
   buffer.writeln('        leading: IconButton(');
   buffer.writeln('          icon: const Icon(Icons.arrow_back),');
   buffer.writeln('          onPressed: () => Get.back(),');

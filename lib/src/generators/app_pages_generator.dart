@@ -63,7 +63,7 @@ String _createNewAppPagesFile(
   buffer.writeln('class AppPages {');
   buffer.writeln('  AppPages._();');
   buffer.writeln();
-  buffer.writeln('  static String get initialRoutes {');
+  buffer.writeln('  static String get initialRoute {');
   buffer.writeln('    return AppRoutes.unknown;');
   buffer.writeln('  }');
   buffer.writeln();

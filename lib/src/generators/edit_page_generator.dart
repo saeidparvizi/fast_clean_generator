@@ -16,6 +16,7 @@ String generateEditScreen({
   // Imports
   buffer.writeln("import 'package:flutter/material.dart';");
   buffer.writeln("import 'package:get/get.dart';");
+  buffer.writeln("import 'package:$projectName/core/widgets/appbar.dart';");
   buffer.writeln(
     "import 'package:$projectName/features/$feature/presentation/controllers/${snakeModel}_controller.dart';",
   );
@@ -36,8 +37,8 @@ String generateEditScreen({
   );
   buffer.writeln('    ');
   buffer.writeln('    return Scaffold(');
-  buffer.writeln('      appBar: AppBar(');
-  buffer.writeln('        title: const Text(\'Edit $pascalModel\'),');
+  buffer.writeln('      appBar: AppAppbar(');
+  buffer.writeln('        title: \'Edit $pascalModel\',');
   buffer.writeln('        leading: IconButton(');
   buffer.writeln('          icon: const Icon(Icons.arrow_back),');
   buffer.writeln('          onPressed: () => Get.back(),');

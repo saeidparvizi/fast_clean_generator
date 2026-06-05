@@ -60,7 +60,7 @@ String generateForm({
     if (type == 'bool') {
       buffer.writeln('  bool _${camelKey}Value = false;');
     } else if (type == 'DateTime') {
-      buffer.writeln('  DateTime? _${camelKey}Value;');
+      buffer.writeln('  String? _${camelKey}Value;');
       buffer.writeln(
         '  final TextEditingController _${camelKey}Controller = TextEditingController();',
       );
@@ -100,7 +100,7 @@ String generateForm({
       );
       buffer.writeln('      if (_${camelKey}Value != null) {');
       buffer.writeln(
-        '        _${camelKey}Controller.text = _${camelKey}Value!.toIso8601String().split(\'T\')[0];',
+        '        _${camelKey}Controller.text = _${camelKey}Value!;',
       );
       buffer.writeln('      }');
     } else if (_isNestedField(value)) {
@@ -307,9 +307,10 @@ String generateForm({
 
       if (type == 'DateTime') {
         buffer.writeln('          case \'$camelKey\':');
-        buffer.writeln('            _${camelKey}Value = picked;');
         buffer.writeln(
-          '            _${camelKey}Controller.text = picked.toIso8601String().split(\'T\')[0];',
+            '            _${camelKey}Value = picked.toIso8601String().split(\'T\')[0];');
+        buffer.writeln(
+          '            _${camelKey}Controller.text = _${camelKey}Value!;',
         );
         buffer.writeln('            break;');
       }
@@ -330,7 +331,8 @@ String generateForm({
 
       if (type == 'DateTime') {
         buffer.writeln('      case \'$camelKey\':');
-        buffer.writeln('        return _${camelKey}Value ?? DateTime.now();');
+        buffer.writeln(
+            '        return _${camelKey}Value != null ? DateTime.tryParse(_${camelKey}Value!) ?? DateTime.now() : DateTime.now();');
       }
     });
 

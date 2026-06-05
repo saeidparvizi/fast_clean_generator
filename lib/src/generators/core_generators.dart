@@ -88,24 +88,53 @@ class Utils {
     return '''
 import 'package:get/get.dart';
 
-// You can replace this with a real Dio implementation
-class ApiProvider extends GetConnect {
-  @override
-  void onInit() {
-    httpClient.baseUrl = 'https://api.example.com';
-    super.onInit();
+class ApiProvider {
+  final GetConnect _connect;
+
+  ApiProvider() : _connect = GetConnect() {
+    _connect.httpClient.baseUrl = 'https://api.example.com';
+    _connect.httpClient.timeout = const Duration(seconds: 30);
   }
+
+  Future<Response<T>> get<T>(
+    String path, {
+    Map<String, dynamic>? data,
+    Map<String, String>? headers,
+  }) =>
+      _connect.get(path, query: data, headers: headers);
+
+  Future<Response<T>> post<T>(
+    String path, {
+    dynamic data,
+    Map<String, String>? headers,
+  }) =>
+      _connect.post(path, data, headers: headers);
+
+  Future<Response<T>> put<T>(
+    String path, {
+    dynamic data,
+    Map<String, String>? headers,
+  }) =>
+      _connect.put(path, data, headers: headers);
+
+  Future<Response<T>> delete<T>(
+    String path, {
+    Map<String, dynamic>? data,
+    Map<String, String>? headers,
+  }) =>
+      _connect.delete(path, query: data, headers: headers);
 }
 ''';
   }
 
   static String generateApiHelper() {
     return '''
+import 'package:get/get.dart';
 import '../exceptions/server_exception.dart';
 
 class ApiHelper {
   Future<T> handleRequest<T>({
-    required Future<dynamic> Function() request,
+    required Future<Response> Function() request,
     required T Function(dynamic) onSuccess,
     required String debugLabel,
   }) async {
@@ -134,21 +163,38 @@ class ApiProvider {
       : dio = Dio(
           BaseOptions(
             baseUrl: 'https://api.example.com',
-            connectTimeout: const Duration(seconds: 5),
-            receiveTimeout: const Duration(seconds: 3),
+            connectTimeout: const Duration(seconds: 30),
+            receiveTimeout: const Duration(seconds: 30),
           ),
         );
 
-  Future<Response> get(String path, {Map<String, dynamic>? data}) =>
-      dio.get(path, queryParameters: data);
+  Future<Response<T>> get<T>(
+    String path, {
+    Map<String, dynamic>? data,
+    Map<String, String>? headers,
+  }) =>
+      dio.get(path, queryParameters: data, options: Options(headers: headers));
 
-  Future<Response> post(String path, {dynamic data}) =>
-      dio.post(path, data: data);
+  Future<Response<T>> post<T>(
+    String path, {
+    dynamic data,
+    Map<String, String>? headers,
+  }) =>
+      dio.post(path, data: data, options: Options(headers: headers));
 
-  Future<Response> put(String path, {dynamic data}) =>
-      dio.put(path, data: data);
+  Future<Response<T>> put<T>(
+    String path, {
+    dynamic data,
+    Map<String, String>? headers,
+  }) =>
+      dio.put(path, data: data, options: Options(headers: headers));
 
-  Future<Response> delete(String path) => dio.delete(path);
+  Future<Response<T>> delete<T>(
+    String path, {
+    Map<String, dynamic>? data,
+    Map<String, String>? headers,
+  }) =>
+      dio.delete(path, queryParameters: data, options: Options(headers: headers));
 }
 ''';
   }
@@ -221,10 +267,14 @@ import 'package:flutter/material.dart';
 class AppAppbar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
+  final Widget? leading;
+  final bool centerTitle;
 
   const AppAppbar({
     required this.title,
     this.actions,
+    this.leading,
+    this.centerTitle = true,
     super.key,
   });
 
@@ -233,6 +283,8 @@ class AppAppbar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(title),
       actions: actions,
+      leading: leading,
+      centerTitle: centerTitle,
     );
   }
 
@@ -261,7 +313,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static String get initialRoutes {
+  static String get initialRoute {
     return AppRoutes.unknown;
   }
 
@@ -296,7 +348,7 @@ class MyApp extends StatelessWidget {
       translations: AppTranslations(),
       locale: Get.deviceLocale,
       fallbackLocale: const Locale('en', 'US'),
-      initialRoute: AppPages.initialRoutes,
+      initialRoute: AppPages.initialRoute,
       getPages: AppPages.pages,
       debugShowCheckedModeBanner: false,
     );
