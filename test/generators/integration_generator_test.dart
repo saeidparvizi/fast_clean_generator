@@ -456,12 +456,12 @@ void main() {
       final providerContent =
           File('lib/core/data/network/api_provider.dart').readAsStringSync();
       expect(providerContent, contains("import 'package:dio/dio.dart';"));
-      expect(providerContent, contains("final Dio dio;"));
+      expect(providerContent, contains('final Dio dio;'));
 
       final helperContent =
           File('lib/core/helpers/api_helper.dart').readAsStringSync();
       expect(helperContent, contains("import 'package:dio/dio.dart';"));
-      expect(helperContent, contains("on DioException catch (e)"));
+      expect(helperContent, contains('on DioException catch (e)'));
 
       // Check pubspec.yaml for dio dependency
       final pubspecContent = File('pubspec.yaml').readAsStringSync();

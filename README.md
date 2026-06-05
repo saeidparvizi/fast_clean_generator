@@ -10,7 +10,8 @@ A powerful, interactive CLI tool designed to accelerate Flutter development by g
 
 ## ✨ Features
 
-- 🚀 **New: Project Initialization**: Instantly scaffold a full Clean Architecture base (`init` command).
+- 🚀 **Full Project Creation**: Bootstrap a brand new Flutter project with Clean Architecture already configured (`create` command).
+- 🏗️ **Complete Scaffolding**: Setup core layers, Theme management, and Internationalization automatically.
 - 🏗️ **Complete Layer Generation**: Automatically creates Domain, Data, and Presentation layers.
 - 🧠 **Recursive Class Generation**: Automatically generates nested Entities and Models from a single complex JSON.
 - 🎮 **Smart GetX Integration**: 
@@ -37,8 +38,16 @@ dart pub global activate fast_clean_generator
 
 ## 🚀 Getting Started
 
-### 1. Initialize Your Project
-Before generating features, set up the standard Clean Architecture folders and core files:
+### 1. Create a New Project
+You can create a brand new Flutter project with Clean Architecture already set up:
+
+```bash
+fcg create my_awesome_app
+```
+This command runs `flutter create` and then automatically executes `fcg init` to scaffold the project.
+
+### 2. Initialize an Existing Project
+If you already have a Flutter project and want to add the Clean Architecture structure:
 
 ```bash
 # Navigate to your Flutter project root
@@ -46,7 +55,7 @@ fcg init
 ```
 This command creates the `core` structure, essential base classes (`BaseUseCase`, `Failure`, etc.), and adds required dependencies (`get`, `dartz`, `equatable`) to your `pubspec.yaml`.
 
-### 2. Generate a Feature
+### 3. Generate a Feature
 Once initialized, you can start generating full-stack modules:
 
 ```bash
@@ -108,7 +117,7 @@ Save this as `model.json` to test the generator:
 
 This project is built with stability in mind:
 - **Linting**: Strictly follows Dart's recommended analysis options.
-- **Testing**: 45+ Unit and Integration tests covering naming logic, recursive JSON parsing, and incremental code generation.
+- **Testing**: 50+ Unit and Integration tests covering naming logic, recursive JSON parsing, and incremental code generation.
 - **CI/CD**: Automated GitHub Actions to verify every commit.
 
 ---

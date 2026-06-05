@@ -1,3 +1,12 @@
+## 1.2.0
+
+- **Full Project Creation**: Introduced `fcg create` command to bootstrap a brand new Flutter project with Clean Architecture already configured.
+- **Advanced Scaffolding**: Added automatic setup for Theme management (`app_colors`, `app_theme`) and Internationalization (`app_translations`, `en_us`).
+- **Network Layer Unification**: Redesigned `ApiProvider` using Composition to ensure 100% compatibility with both GetConnect and Dio.
+- **Enhanced Core UI**: Modernized `AppAppbar` and `AppInput` to be production-ready with standard Flutter parameters.
+- **Critical Stability Fixes**: Resolved all type mismatches in generated Forms (especially for Date fields) and aligned base class naming conventions.
+- **Stress Tested**: Verified the entire generation pipeline with 51 comprehensive tests covering deeply nested JSON and reserved keyword edge cases.
+
 ## 1.1.0
 
 - **New `init` Command**: Scaffolds a full Clean Architecture project structure with essential core files (`BaseUseCase`, `Failure`, `RepositoryExecutor`, etc.).
