@@ -33,7 +33,7 @@ class GenerateCodeCommand extends Command {
         r' |_|   \__,_|___/\__|  \____/_|\___|\__,_|_| |_|     '));
     print('');
     print(TerminalStyle.bold(
-        '   C L E A N   A R C H   G E N E R A T O R  [V1.1.0]'));
+        '   F A S T   C L E A N   G E N E R A T O R  [V1.1.0]'));
     print('');
 
     // ──────────────────────────────────────────────

@@ -445,5 +445,68 @@ void main() {
       expect(currentContent, equals(customContent),
           reason: 'Init command should not overwrite existing core files');
     });
+
+    test('InitProjectCommand: should support Dio option', () async {
+      final runner = CommandRunner('fcg', 'test')
+        ..addCommand(InitProjectCommand());
+
+      await runner.run(['init', '--http=dio']);
+
+      // Check core files for Dio implementation
+      final providerContent = File('lib/core/data/network/api_provider.dart').readAsStringSync();
+      expect(providerContent, contains("import 'package:dio/dio.dart';"));
+      expect(providerContent, contains("final Dio dio;"));
+
+      final helperContent = File('lib/core/helpers/api_helper.dart').readAsStringSync();
+      expect(helperContent, contains("import 'package:dio/dio.dart';"));
+      expect(helperContent, contains("on DioException catch (e)"));
+
+      // Check pubspec.yaml for dio dependency
+      final pubspecContent = File('pubspec.yaml').readAsStringSync();
+      expect(pubspecContent, contains('dio:'));
+    });
+
+    test('Stress Test: Complex JSON with multiple edge cases', () async {
+      final engine = GeneratorEngine();
+      final options = GenerateOptions();
+
+      // JSON with: Nested objects, Reserved keywords (class), Primitive lists
+      const schema = '''
+      {
+        "id": 1,
+        "class": "Professional",
+        "tags": ["dart", "flutter"],
+        "owner": {
+          "name": "Saeid",
+          "details": {
+            "age": 30
+          }
+        }
+      }
+      ''';
+
+      await engine.generate(
+        jsonOrPath: schema,
+        rootClass: 'Asset',
+        feature: 'inventory',
+        crudMethods: ['list', 'add'],
+        options: options,
+      );
+
+      // 1. Check Reserved Keyword Handling
+      final entityContent = File('lib/features/inventory/domain/entities/asset_entity.dart').readAsStringSync();
+      expect(entityContent, contains('final String? classValue;'), reason: 'Keyword "class" should be escaped to classValue');
+
+      // 2. Check Primitive List Handling
+      expect(entityContent, contains('final List<String>? tags;'));
+
+      // 3. Check Recursive Generation
+      expect(File('lib/features/inventory/domain/entities/owner_entity.dart').existsSync(), isTrue);
+      expect(File('lib/features/inventory/domain/entities/details_entity.dart').existsSync(), isTrue);
+
+      // 4. Check syntax validity of everything
+      final formatResult = await Process.run('dart', ['format', '--output=none', 'lib/features/inventory']);
+      expect(formatResult.exitCode, isNot(65), reason: 'Stress test generated code has syntax errors');
+    });
   });
 }
