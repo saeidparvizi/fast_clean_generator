@@ -18,12 +18,35 @@
     </extensions>
 
     <actions>
-        <action id="FastClean.NewFeature"
-                class="com.fastclean.plugin.actions.NewFeatureAction"
-                text="New Clean Feature"
-                icon="/icons/actionIcon.svg"
-                description="Generate a new Clean Architecture feature">
+        <group id="FastClean.Group" text="Clean Architecture" popup="true" icon="/icons/actionIcon.svg">
             <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewFile"/>
-        </action>
+
+            <action id="FastClean.NewFeature"
+                    class="com.fastclean.plugin.actions.NewFeatureAction"
+                    text="Full Feature"
+                    description="Generate a complete Clean Architecture feature"/>
+
+            <separator/>
+
+            <action id="FastClean.NewEntity"
+                    class="com.fastclean.plugin.actions.NewEntityAction"
+                    text="Entity Only"
+                    description="Generate only the Domain Entity"/>
+
+            <action id="FastClean.NewModel"
+                    class="com.fastclean.plugin.actions.NewModelAction"
+                    text="Model Only"
+                    description="Generate only the Data Model"/>
+
+            <action id="FastClean.NewRepository"
+                    class="com.fastclean.plugin.actions.NewRepositoryAction"
+                    text="Repository Only"
+                    description="Generate only the Repository interface and implementation"/>
+
+            <action id="FastClean.NewController"
+                    class="com.fastclean.plugin.actions.NewControllerAction"
+                    text="Controller Only"
+                    description="Generate only the GetX Controllers"/>
+        </group>
     </actions>
 </idea-plugin>

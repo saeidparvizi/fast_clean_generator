@@ -85,14 +85,15 @@ class GenerateCodeCommand extends Command {
 
     if (jsonOrPath == null || jsonOrPath.isEmpty) {
       if (isHeadless) {
-        throw GenerationException(
-            'Missing required --json argument in headless mode.');
+        // Default to schema.json in headless mode instead of throwing error
+        jsonOrPath = 'tool/schema.json';
+      } else {
+        jsonOrPath = await _promptInput(
+          'Enter the JSON file path or JSON string',
+          required: false,
+          defaultValue: 'tool/schema.json',
+        );
       }
-      jsonOrPath = await _promptInput(
-        'Enter the JSON file path or JSON string',
-        required: false,
-        defaultValue: 'tool/schema.json',
-      );
     }
 
     // 2. Feature Name

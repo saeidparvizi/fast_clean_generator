@@ -17,7 +17,8 @@ class CliInvoker(private val project: Project) {
         featureName: String,
         rootClassName: String,
         jsonSchema: String,
-        crudMethods: List<String>
+        crudMethods: List<String>,
+        components: String = "all"
     ) {
         val projectPath = project.basePath ?: return
         
@@ -32,14 +33,14 @@ class CliInvoker(private val project: Project) {
         commandLine.exePath = shell
         commandLine.addParameters(shellFlag)
 
-        // Sanitize JSON: Remove newlines and escape single quotes to prevent shell parsing issues
+        // Sanitize JSON
         val sanitizedJson = jsonSchema.replace("\n", " ").replace("\r", "").replace("'", "'\\''")
         val jsonArg = if (jsonSchema.isNotEmpty()) "--json='$sanitizedJson'" else ""
         val crudArg = "--crud=${crudMethods.joinToString(",")}"
+        val componentArg = "--components=$components"
         
-        // Use full path to 'dart' if possible, or assume it's in PATH
-        val fullCommand = "dart pub global run fast_clean_generator generate --headless --feature=$featureName --class=$rootClassName $crudArg $jsonArg || " +
-                         "fcg generate --headless --feature=$featureName --class=$rootClassName $crudArg $jsonArg"
+        val fullCommand = "dart pub global run fast_clean_generator generate --headless --feature=$featureName --class=$rootClassName $crudArg $jsonArg $componentArg || " +
+                         "fcg generate --headless --feature=$featureName --class=$rootClassName $crudArg $jsonArg $componentArg"
         
         commandLine.addParameters(fullCommand)
 
