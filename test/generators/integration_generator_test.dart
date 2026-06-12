@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:test/test.dart';
 import 'package:args/command_runner.dart';
 import 'package:fast_clean_generator/src/commands/init_project_command.dart';
+import 'package:fast_clean_generator/src/commands/generate_code_command.dart';
 import 'package:fast_clean_generator/src/generators/remote_data_generator.dart';
 import 'package:fast_clean_generator/src/generators/repository_generator.dart';
 import 'package:fast_clean_generator/src/generators/repository_impl_generator.dart';
@@ -520,6 +521,44 @@ void main() {
           'dart', ['format', '--output=none', 'lib/features/inventory']);
       expect(formatResult.exitCode, isNot(65),
           reason: 'Stress test generated code has syntax errors');
+    });
+    test('GenerateCodeCommand: should support headless mode with flags',
+        () async {
+      final runner = CommandRunner('fcg', 'test')
+        ..addCommand(GenerateCodeCommand());
+
+      const schema = '{"id": 1, "name": "Headless Test"}';
+
+      // Run generate command in headless mode
+      await runner.run([
+        'generate',
+        '--headless',
+        '--json=$schema',
+        '--feature=headless',
+        '--class=Headless',
+        '--crud=get,list',
+        '--components=entity,model,usecase'
+      ]);
+
+      // Verify files created
+      expect(
+          File('lib/features/headless/domain/entities/headless_entity.dart')
+              .existsSync(),
+          isTrue);
+      expect(
+          File('lib/features/headless/data/models/headless_model.dart')
+              .existsSync(),
+          isTrue);
+      expect(
+          File('lib/features/headless/domain/usecases/get_headless_usecase.dart')
+              .existsSync(),
+          isTrue);
+
+      // Verify content of entity
+      final entityContent =
+          File('lib/features/headless/domain/entities/headless_entity.dart')
+              .readAsStringSync();
+      expect(entityContent, contains('class HeadlessEntity extends Equatable'));
     });
   });
 }

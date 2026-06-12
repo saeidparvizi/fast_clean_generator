@@ -1,3 +1,7 @@
+## 1.2.1
+
+- **Headless Mode Support**: Added CLI flags (`--json`, `--feature`, etc.) and a `--headless` mode to allow non-interactive code generation, enabling integration with IDE plugins and CI/CD pipelines.
+
 ## 1.2.0
 
 - **Full Project Creation**: Introduced `fcg create` command to bootstrap a brand new Flutter project with Clean Architecture already configured.

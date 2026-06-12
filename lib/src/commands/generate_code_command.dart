@@ -17,63 +17,159 @@ class GenerateCodeCommand extends Command {
   String get description =>
       'Generates Flutter code based on a JSON schema with interactive prompts.';
 
+  GenerateCodeCommand() {
+    argParser.addOption(
+      'json',
+      abbr: 'j',
+      help: 'The JSON file path or JSON string.',
+    );
+    argParser.addOption(
+      'feature',
+      abbr: 'f',
+      help: 'The feature name (camelCase, e.g., booking).',
+    );
+    argParser.addOption(
+      'class',
+      abbr: 'c',
+      help: 'The root class name (PascalCase, e.g., Payment).',
+    );
+    argParser.addOption(
+      'crud',
+      abbr: 'm',
+      help: 'Comma separated CRUD methods (e.g., list,get,add).',
+    );
+    argParser.addOption(
+      'components',
+      abbr: 'o',
+      help: 'Comma separated components or "all".',
+    );
+    argParser.addFlag(
+      'headless',
+      help: 'Run without interactive prompts.',
+      negatable: false,
+    );
+  }
+
   @override
   Future<void> run() async {
-    print(TerminalStyle.bold(
-        r'  _____           _     _____ _                       '));
-    print(TerminalStyle.bold(
-        r' |  ___|         | |   /  __ \ |                      '));
-    print(TerminalStyle.bold(
-        r' | |__  __ _ ___| |_  | /  \/ | ___  __ _ _ __       '));
-    print(TerminalStyle.bold(
-        r' |  __|/ _` / __| __| | |   | |/ _ \/ _` | ' "'" r'_ \      '));
-    print(TerminalStyle.bold(
-        r' | |  | (_| \__ \ |_  | \__/\ |  __/ (_| | | | |     '));
-    print(TerminalStyle.bold(
-        r' |_|   \__,_|___/\__|  \____/_|\___|\__,_|_| |_|     '));
-    print('');
-    print(TerminalStyle.bold(
-        '   F A S T   C L E A N   G E N E R A T O R  [V1.2.0]'));
-    print('');
+    final isHeadless = argResults?['headless'] as bool? ?? false;
 
-    // ──────────────────────────────────────────────
-    // 1. Get JSON input (file path or direct json string)
-    // ──────────────────────────────────────────────
+    if (!isHeadless) {
+      print(TerminalStyle.bold(
+          r'  _____           _     _____ _                       '));
+      print(TerminalStyle.bold(
+          r' |  ___|         | |   /  __ \ |                      '));
+      print(TerminalStyle.bold(
+          r' | |__  __ _ ___| |_  | /  \/ | ___  __ _ _ __       '));
+      print(TerminalStyle.bold(
+          r' |  __|/ _` / __| __| | |   | |/ _ \/ _` | ' "'" r'_ \      '));
+      print(TerminalStyle.bold(
+          r' | |  | (_| \__ \ |_  | \__/\ |  __/ (_| | | | |     '));
+      print(TerminalStyle.bold(
+          r' |_|   \__,_|___/\__|  \____/_|\___|\__,_|_| |_|     '));
+      print('');
+      print(TerminalStyle.bold(
+          '   F A S T   C L E A N   G E N E R A T O R  [V1.2.1]'));
+      print('');
+    }
 
-    final jsonOrPath = await _promptInput(
-      'Enter the JSON file path or JSON string',
-      required: false,
-      defaultValue: 'tool/schema.json',
-    );
+    // 1. JSON Schema
+    String? jsonOrPath = argResults?['json'] as String?;
 
-    final featureName = await _promptInput(
-      'Enter the feature name (camelCase, e.g., booking)',
-      validator: (v) => v.isNotEmpty && v == toCamel(v),
-      errorMessage: 'Invalid camelCase format. Example: booking',
-      required: true,
-    );
+    // In some shell environments, quotes might be preserved, let's clean them
+    if (jsonOrPath != null &&
+        jsonOrPath.startsWith("'") &&
+        jsonOrPath.endsWith("'")) {
+      jsonOrPath = jsonOrPath.substring(1, jsonOrPath.length - 1);
+    }
 
-    final rootClass = await _promptInput(
-      'Enter the root class name (PascalCase, e.g., Payment)',
-      validator: (v) => v.isNotEmpty && v == toPascal(v),
-      errorMessage: 'Invalid PascalCase format. Example: Payment',
-      required: true,
-    );
+    if (jsonOrPath == null || jsonOrPath.isEmpty) {
+      if (isHeadless) {
+        throw GenerationException(
+            'Missing required --json argument in headless mode.');
+      }
+      jsonOrPath = await _promptInput(
+        'Enter the JSON file path or JSON string',
+        required: false,
+        defaultValue: 'tool/schema.json',
+      );
+    }
 
-    // ──────────────────────────────────────────────
-    // 2. Feature name (folder name)
-    // ──────────────────────────────────────────────
+    // 2. Feature Name
+    String? featureName = argResults?['feature'] as String?;
+    if (featureName == null || featureName.isEmpty) {
+      if (isHeadless) {
+        throw GenerationException(
+            'Missing required --feature argument in headless mode.');
+      }
+      featureName = await _promptInput(
+        'Enter the feature name (camelCase, e.g., booking)',
+        validator: (v) => v.isNotEmpty && v == toCamel(v),
+        errorMessage: 'Invalid camelCase format. Example: booking',
+        required: true,
+      );
+    }
 
-    final crudMethods = await _promptCrudMethods();
+    // 3. Root Class
+    String? rootClass = argResults?['class'] as String?;
+    if (rootClass == null || rootClass.isEmpty) {
+      if (isHeadless) {
+        throw GenerationException(
+            'Missing required --class argument in headless mode.');
+      }
+      rootClass = await _promptInput(
+        'Enter the root class name (PascalCase, e.g., Payment)',
+        validator: (v) => v.isNotEmpty && v == toPascal(v),
+        errorMessage: 'Invalid PascalCase format. Example: Payment',
+        required: true,
+      );
+    }
 
-    // ──────────────────────────────────────────────
-    // 3. Root class name (main entity/model name)
-    // ──────────────────────────────────────────────
-    final options = _promptGenerationOptions();
+    // 4. CRUD Methods
+    List<String> crudMethods;
+    final crudArg = argResults?['crud'] as String?;
+    if (crudArg != null && crudArg.isNotEmpty) {
+      crudMethods =
+          crudArg.split(',').map((e) => e.trim().toLowerCase()).toList();
+    } else {
+      if (isHeadless) {
+        crudMethods = ['list', 'get', 'add', 'update', 'delete'];
+      } else {
+        crudMethods = await _promptCrudMethods();
+      }
+    }
 
-    // ──────────────────────────────────────────────
-    // 4. Select desired CRUD operations
-    // ──────────────────────────────────────────────
+    // 5. Components Options
+    GenerateOptions options;
+    final componentsArg = argResults?['components'] as String?;
+    if (componentsArg != null && componentsArg.isNotEmpty) {
+      final comps =
+          componentsArg.split(',').map((e) => e.trim().toLowerCase()).toSet();
+      final all = comps.contains('all');
+      options = GenerateOptions(
+        crudMethods: crudMethods,
+        generateEntity: all || comps.contains('entity'),
+        generateModel: all || comps.contains('model'),
+        generateUseCases:
+            all || comps.contains('usecase') || comps.contains('usecases'),
+        generateRepository: all || comps.contains('repository'),
+        generateBindings:
+            all || comps.contains('binding') || comps.contains('bindings'),
+        generateRemoteData:
+            all || comps.contains('remotedata') || comps.contains('data'),
+        generateController: all || comps.contains('controller'),
+        generatePage: all || comps.contains('page'),
+        generateForm: all || comps.contains('form'),
+        generateRoute: all || comps.contains('route'),
+      );
+    } else {
+      if (isHeadless) {
+        options = GenerateOptions(crudMethods: crudMethods); // Default all true
+      } else {
+        options = _promptGenerationOptions();
+      }
+    }
+
     print(TerminalStyle.info('⏳ Starting code generation...'));
 
     try {

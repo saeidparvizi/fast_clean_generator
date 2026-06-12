@@ -1,0 +1,10 @@
+<ivy-module version="2.0">
+  <info organisation="bundledPlugin" module="com.intellij.copyright" revision="232.8660.185.2321.10696284+362"/>
+  <configurations>
+    <conf name="default" visibility="public"/>
+  </configurations>
+  <publications>
+    <artifact name="/Users/saeid/.gradle/caches/transforms-3/0e6e88eee31e2cac903b512e6b709a19/transformed/android-studio-2023.2.1.1-mac/plugins/copyright" type="directory" conf="default"/>
+  </publications>
+  <dependencies/>
+</ivy-module>

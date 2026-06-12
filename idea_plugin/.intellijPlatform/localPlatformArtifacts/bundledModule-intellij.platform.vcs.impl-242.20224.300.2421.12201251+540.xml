@@ -1,0 +1,10 @@
+<ivy-module version="2.0">
+  <info organisation="bundledModule" module="intellij.platform.vcs.impl" revision="242.20224.300.2421.12201251+540"/>
+  <configurations>
+    <conf name="default" visibility="public"/>
+  </configurations>
+  <publications>
+    <artifact name="/Users/saeid/.gradle/caches/transforms-3/af78d995d6beb35286a661418b699778/transformed/android-studio-2024.2.1.1-mac/lib/modules/intellij.platform.vcs.impl.jar" type="jar" conf="default"/>
+  </publications>
+  <dependencies/>
+</ivy-module>
