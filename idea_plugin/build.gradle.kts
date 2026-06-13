@@ -31,6 +31,9 @@ dependencies {
         
         // Add test framework
         testFramework(TestFrameworkType.Platform)
+
+        // Added for verifyPlugin task
+        pluginVerifier()
     }
     
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
@@ -53,16 +56,39 @@ intellijPlatform {
             url.set("https://github.com/saeidparvizi")
         }
         
+        description.set("""
+            A powerful productivity tool to generate Flutter Clean Architecture and GetX boilerplate code instantly.
+            <br><br>
+            <b>Key Features:</b>
+            <ul>
+                <li>Full Project Bootstrapping (create command)</li>
+                <li>Recursive Class Generation for deep JSON schemas</li>
+                <li>Unified Network Layer (Dio/GetConnect supported)</li>
+                <li>Smart UI component generation (Forms, Screens, Dialogs)</li>
+                <li>Granular control over component generation (Entity, Model, Repository, etc.)</li>
+            </ul>
+        """.trimIndent())
+
         ideaVersion {
-            sinceBuild.set("232")
-            untilBuild.set("261.*") // This will definitely cover your AI-253 build
+            sinceBuild.set("242") // Matched with IntelliJ 2024.2 base
+            untilBuild.set("261.*")
         }
+    }
+
+    signing {
+        certificateChain.set(providers.environmentVariable("CERTIFICATE_CHAIN"))
+        privateKey.set(providers.environmentVariable("PRIVATE_KEY"))
+        password.set(providers.environmentVariable("PRIVATE_KEY_PASSWORD"))
+    }
+
+    publishing {
+        token.set(providers.environmentVariable("JETBRAINS_MARKETPLACE_TOKEN"))
     }
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 

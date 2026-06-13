@@ -4,8 +4,15 @@
     <vendor email="saeidparvizi@gmail.com" url="https://github.com/saeidparvizi">Saeid Parvizi</vendor>
 
     <description><![CDATA[
-    A powerful tool to generate Flutter Clean Architecture and GetX boilerplate code.<br>
-    Right-click on any directory (recommended lib/features) to create a new clean feature instantly.
+    A powerful productivity tool to generate Flutter Clean Architecture and GetX boilerplate code instantly.<br><br>
+    <b>Key Features:</b>
+    <ul>
+        <li>Full Project Bootstrapping (create command)</li>
+        <li>Recursive Class Generation for deep JSON schemas</li>
+        <li>Unified Network Layer (Dio/GetConnect supported)</li>
+        <li>Smart UI component generation (Forms, Screens, Dialogs)</li>
+        <li>Granular control over component generation (Entity, Model, Repository, etc.)</li>
+    </ul>
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>

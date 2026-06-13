@@ -26,6 +26,16 @@ A powerful, interactive CLI tool designed to accelerate Flutter development by g
 
 ---
 
+## 🎨 Android Studio Plugin (GUI)
+
+Prefer a graphical interface? You can now use the **Fast Clean Generator** plugin directly from Android Studio or IntelliJ IDEA.
+
+1.  **Install**: Search for `Fast Clean Generator` in **Settings > Plugins > Marketplace**.
+2.  **Use**: Right-click on any folder (e.g., `lib/features`) and select **Clean Architecture > Full Feature**.
+3.  **Visual Configuration**: Fill in the form and select the exact components you want to generate.
+
+---
+
 ## 📦 Installation
 
 To use `fast_clean_generator` globally on your machine, run:
