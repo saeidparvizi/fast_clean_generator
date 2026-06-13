@@ -1,3 +1,5 @@
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.9.21"
@@ -26,7 +28,17 @@ dependencies {
         plugin("io.flutter", "82.0.1")
         
         instrumentationTools()
+        
+        // Add test framework
+        testFramework(TestFrameworkType.Platform)
     }
+    
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    
+    // Explicitly add JUnit 4 for IntelliJ Test Framework compatibility
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.opentest4j:opentest4j:1.3.0")
 }
 
 intellijPlatform {

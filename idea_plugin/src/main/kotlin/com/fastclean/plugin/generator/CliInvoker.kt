@@ -13,22 +13,22 @@ import java.nio.charset.StandardCharsets
 
 class CliInvoker(private val project: Project) {
 
-    fun generateFeature(
+    fun buildCommandLine(
+        projectPath: String,
         featureName: String,
         rootClassName: String,
         jsonSchema: String,
         crudMethods: List<String>,
         components: String = "all"
-    ) {
-        val projectPath = project.basePath ?: return
-        
+    ): GeneralCommandLine {
         val commandLine = GeneralCommandLine()
         commandLine.setWorkDirectory(projectPath)
         commandLine.charset = StandardCharsets.UTF_8
         commandLine.withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
         
-        val shell = if (System.getProperty("os.name").lowercase().contains("win")) "cmd.exe" else "/bin/zsh"
-        val shellFlag = if (System.getProperty("os.name").lowercase().contains("win")) "/c" else "-cl" 
+        val isWindows = System.getProperty("os.name").lowercase().contains("win")
+        val shell = if (isWindows) "cmd.exe" else "/bin/zsh"
+        val shellFlag = if (isWindows) "/c" else "-cl" 
         
         commandLine.exePath = shell
         commandLine.addParameters(shellFlag)
@@ -43,6 +43,18 @@ class CliInvoker(private val project: Project) {
                          "fcg generate --headless --feature=$featureName --class=$rootClassName $crudArg $jsonArg $componentArg"
         
         commandLine.addParameters(fullCommand)
+        return commandLine
+    }
+
+    fun generateFeature(
+        featureName: String,
+        rootClassName: String,
+        jsonSchema: String,
+        crudMethods: List<String>,
+        components: String = "all"
+    ) {
+        val projectPath = project.basePath ?: return
+        val commandLine = buildCommandLine(projectPath, featureName, rootClassName, jsonSchema, crudMethods, components)
 
         try {
             val processHandler = OSProcessHandler(commandLine)
