@@ -2,10 +2,11 @@ package com.fastclean.plugin.generator
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.OSProcessHandler
-import com.intellij.execution.process.ProcessAdapter
+import com.intellij.execution.process.ProcessListener
 import com.intellij.execution.process.ProcessEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.util.Key
@@ -24,14 +25,14 @@ class CliInvoker(private val project: Project) {
     ): GeneralCommandLine {
         val commandLine = GeneralCommandLine()
         commandLine.withWorkDirectory(File(projectPath))
-        commandLine.charset = StandardCharsets.UTF_8
+        commandLine.withCharset(StandardCharsets.UTF_8)
         commandLine.withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
         
         val isWindows = System.getProperty("os.name").lowercase().contains("win")
         val shell = if (isWindows) "cmd.exe" else "/bin/zsh"
         val shellFlag = if (isWindows) "/c" else "-cl" 
         
-        commandLine.exePath = shell
+        commandLine.withExePath(shell)
         commandLine.addParameters(shellFlag)
 
         // Sanitize JSON
@@ -54,14 +55,15 @@ class CliInvoker(private val project: Project) {
         crudMethods: List<String>,
         components: String = "all"
     ) {
-        val projectPath = project.basePath ?: return
+        val projectDir = project.guessProjectDir()
+        val projectPath = projectDir?.path ?: return
         val commandLine = buildCommandLine(projectPath, featureName, rootClassName, jsonSchema, crudMethods, components)
 
         try {
             val processHandler = OSProcessHandler(commandLine)
             val output = StringBuilder()
 
-            processHandler.addProcessListener(object : ProcessAdapter() {
+            processHandler.addProcessListener(object : ProcessListener {
                 override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
                     output.append(event.text)
                 }

@@ -1,3 +1,9 @@
+## 1.2.5
+
+- **Full Deprecation Fix**: Replaced `ProcessAdapter` with `ProcessListener` and `basePath` with `guessProjectDir()`.
+- **Builder Pattern Compliance**: Migrated `GeneralCommandLine` property setters to builder-style `with...` methods.
+- **Enhanced Compatibility**: Guaranteed zero deprecated API usages for IntelliJ/Android Studio up to 2026.1.
+
 ## 1.2.4
 
 - **Zero Warning Guarantee**: Completely eliminated all deprecated API warnings for IntelliJ/Android Studio 2024, 2025, and 2026.

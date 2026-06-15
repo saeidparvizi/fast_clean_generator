@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.fastclean"
-version = "1.2.4"
+version = "1.2.5"
 
 repositories {
     mavenCentral()
@@ -49,7 +49,7 @@ intellijPlatform {
     pluginConfiguration {
         id.set("com.fastclean.generator")
         name.set("Fast Clean Generator")
-        version.set("1.2.4")
+        version.set("1.2.5")
         
         vendor {
             name.set("Saeid Parvizi")
