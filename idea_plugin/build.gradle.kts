@@ -48,7 +48,7 @@ intellijPlatform {
     pluginConfiguration {
         id.set("com.fastclean.generator")
         name.set("Fast Clean Generator")
-        version.set("1.2.1")
+        version.set("1.2.2")
         
         vendor {
             name.set("Saeid Parvizi")

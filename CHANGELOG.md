@@ -1,3 +1,10 @@
+## 1.2.2
+
+- **Bug Fixes**: Resolved route injection issue in `AppPages`.
+- **Improved ID Handling**: Enhanced identification logic for custom ID fields (e.g., `booking_id`).
+- **Standardized Property Access**: Ensured all generated UI properties use consistent camelCase naming.
+- **Plugin Compatibility**: Resolved deprecated API usages for IntelliJ/Android Studio 2024.2+.
+
 ## 1.2.1
 
 - **Headless Mode Support**: Added CLI flags (`--json`, `--feature`, etc.) and a `--headless` mode to allow non-interactive code generation, enabling integration with IDE plugins and CI/CD pipelines.
