@@ -1,4 +1,5 @@
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 
 plugins {
     id("java")
@@ -7,7 +8,7 @@ plugins {
 }
 
 group = "com.fastclean"
-version = "1.2.2"
+version = "1.2.4"
 
 repositories {
     mavenCentral()
@@ -48,7 +49,7 @@ intellijPlatform {
     pluginConfiguration {
         id.set("com.fastclean.generator")
         name.set("Fast Clean Generator")
-        version.set("1.2.2")
+        version.set("1.2.4")
         
         vendor {
             name.set("Saeid Parvizi")
@@ -58,6 +59,10 @@ intellijPlatform {
         
         description.set("""
             A powerful productivity tool to generate Flutter Clean Architecture and GetX boilerplate code instantly.
+            <br><br>
+            <b>⚠️ Important Requirement:</b><br>
+            To use this plugin, you must have the CLI package installed on your system. Run the following command in your terminal:<br>
+            <code>dart pub global activate fast_clean_generator</code>
             <br><br>
             <b>Key Features:</b>
             <ul>
@@ -72,6 +77,13 @@ intellijPlatform {
         ideaVersion {
             sinceBuild.set("242") // Matched with IntelliJ 2024.2 base
             untilBuild.set("261.*")
+        }
+    }
+
+    pluginVerification {
+        ides {
+            ide(IntelliJPlatformType.IntellijIdeaCommunity, "2024.2.1")
+            ide(IntelliJPlatformType.IntellijIdeaCommunity, "2024.3")
         }
     }
 

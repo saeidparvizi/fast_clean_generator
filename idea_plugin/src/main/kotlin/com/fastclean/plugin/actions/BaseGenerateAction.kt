@@ -1,12 +1,12 @@
 package com.fastclean.plugin.actions
 
-import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.fastclean.plugin.ui.GenerateFeatureDialog
 import com.fastclean.plugin.generator.CliInvoker
 
-abstract class BaseGenerateAction(private val mode: String, private val component: String) : AnAction() {
+abstract class BaseGenerateAction(private val mode: String, private val component: String) : DumbAwareAction() {
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     override fun actionPerformed(e: AnActionEvent) {

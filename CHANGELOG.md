@@ -1,3 +1,14 @@
+## 1.2.4
+
+- **Zero Warning Guarantee**: Completely eliminated all deprecated API warnings for IntelliJ/Android Studio 2024, 2025, and 2026.
+- **VFS Reliability**: Switched to `VfsUtil.findFileByIoFile` for more robust file system refreshes after generation.
+- **GeneralCommandLine Fixes**: Replaced deprecated `setWorkDirectory` with modern `withWorkDirectory`.
+
+## 1.2.3
+
+- **Plugin Stability**: Switched to `DumbAwareAction` to allow generation during indexing.
+- **Modern API Compliance**: Updated `GeneralCommandLine` and `ProjectDir` access to eliminate deprecated API warnings for IntelliJ 2024.2+.
+
 ## 1.2.2
 
 - **Bug Fixes**: Resolved route injection issue in `AppPages`.
