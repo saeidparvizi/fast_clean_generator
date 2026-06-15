@@ -8,6 +8,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.util.Key
 import java.nio.charset.StandardCharsets
 
@@ -68,7 +69,9 @@ class CliInvoker(private val project: Project) {
                 override fun processTerminated(event: ProcessEvent) {
                     ApplicationManager.getApplication().invokeLater {
                         if (event.exitCode == 0) {
-                            LocalFileSystem.getInstance().refresh(true)
+                            LocalFileSystem.getInstance().findFileByPath(projectPath)?.let { virtualFile ->
+                                VfsUtil.markDirtyAndRefresh(true, true, true, virtualFile)
+                            }
                             Messages.showInfoMessage(project, "Feature '$featureName' generated successfully!", "Success")
                         } else {
                             val errorMsg = output.toString()
