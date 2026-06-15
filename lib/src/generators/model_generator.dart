@@ -90,10 +90,13 @@ String generateModel({
   data.forEach((key, value) {
     final camel = toCamel(key);
     if (value is Map) {
-      b.writeln("      '$key': $camel?.toJson(),");
+      final nested = toPascal(key);
+      b.writeln("      '$key': ($camel as ${nested}Model?)?.toJson(),");
     } else if (value is List && value.isNotEmpty) {
       if (value.first is Map) {
-        b.writeln("      '$key': $camel?.map((e) => e.toJson()).toList(),");
+        final nested = toPascal(key);
+        b.writeln(
+            "      '$key': $camel?.map((e) => (e as ${nested}Model).toJson()).toList(),");
       } else {
         // Primitive list
         b.writeln("      '$key': $camel,");

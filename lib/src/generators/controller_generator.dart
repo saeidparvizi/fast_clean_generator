@@ -110,7 +110,7 @@ class ControllerGenerator {
       Map<String, dynamic> jsonSchema) {
     final pascalModel = toPascal(className);
     final snakeModel = toSnakeFromName(className);
-    final idField = identifyIdField(jsonSchema);
+    final idField = identifyIdField(jsonSchema, className);
 
     final buffer = StringBuffer();
     buffer.writeln("import 'package:get/get.dart';");
@@ -388,7 +388,7 @@ class ControllerGenerator {
       buffer.writeln('    final parameters = Get.parameters;');
       buffer.writeln(
           '    if (argument != null && argument is Map && argument.containsKey(\'$snakeModel\')) { item = argument[\'$snakeModel\']; }');
-      buffer.writeln('    id = parameters[\'$idField\'];');
+      buffer.writeln('    id = parameters[\'id\'];');
       buffer.writeln('    if (item == null && id != null && id!.isNotEmpty) {');
       if (crudMethods.contains('get')) {
         buffer.writeln('      get$pascalClass(id!);');
@@ -407,7 +407,7 @@ class ControllerGenerator {
     final pluralSnake = toSnakeFromName(pluralPascal);
     final camelPlural = toCamel(pluralPascal);
     final camelModel = toCamel(model);
-    final actualIdField = idField ?? identifyIdField(jsonSchema);
+    final actualIdField = idField ?? identifyIdField(jsonSchema, model);
 
     if (isList) {
       if (crudMethods.contains('list')) {
@@ -441,11 +441,11 @@ class ControllerGenerator {
         buffer.writeln('  Future<void> delete$pascalModel(dynamic id) async {');
         buffer.writeln('    isLoading.value = true; error.value = \'\';');
         buffer.writeln(
-            '    final result = await delete${pascalModel}UseCase({\'$actualIdField\': id});');
+            '    final result = await delete${pascalModel}UseCase({\'id\': id});');
         buffer.writeln(
             '    result.fold((failure) { isLoading.value = false; error.value = failure.message; }, (data) {');
         buffer.writeln(
-            '      isLoading.value = false; $pluralSnake.removeWhere((item) => item.$actualIdField == id);');
+            '      isLoading.value = false; $pluralSnake.removeWhere((item) => item.${toCamel(actualIdField)} == id);');
         buffer.writeln(
             '      Utils.showMessage(message: \'$pascalModel deleted successfully\');');
         buffer.writeln('    });');
@@ -456,7 +456,7 @@ class ControllerGenerator {
         buffer.writeln('  Future<void> get$pascalModel(String id) async {');
         buffer.writeln('    try { isLoading.value = true; error.value = \'\';');
         buffer.writeln(
-            '      final result = await get${pascalModel}UseCase({\'$actualIdField\': id});');
+            '      final result = await get${pascalModel}UseCase({\'id\': id});');
         buffer.writeln(
             '      result.fold((failure) => error.value = failure.toString(), (data) { item = data; update(); });');
         buffer.writeln(

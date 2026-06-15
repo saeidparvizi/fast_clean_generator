@@ -206,15 +206,26 @@ String toTitleCase(String text) {
 }
 
 // Identifies the ID field from the JSON schema
-String identifyIdField(Map<String, dynamic> jsonSchema) {
-  // Priority list for ID fields
-  final priorityFields = ['id', 'uuid', '_id', 'identifier', 'uid'];
+String identifyIdField(Map<String, dynamic> jsonSchema, [String? className]) {
+  final commonIdFields = ['id', 'uuid', '_id', 'identifier', 'uid'];
 
-  for (final field in priorityFields) {
-    if (jsonSchema.containsKey(field)) {
-      return field;
-    }
+  // 1. Check for direct common ID names
+  for (final field in commonIdFields) {
+    if (jsonSchema.containsKey(field)) return field;
   }
 
+  // 2. Check for className_id (snake_case)
+  if (className != null) {
+    final snakeClass = toSnakeFromName(className);
+    final classId = '${snakeClass}_id';
+    if (jsonSchema.containsKey(classId)) return classId;
+  }
+
+  // 3. Check for any field ending with _id
+  for (final key in jsonSchema.keys) {
+    if (key.toLowerCase().endsWith('_id')) return key;
+  }
+
+  // 4. Default fallback
   return 'id';
 }

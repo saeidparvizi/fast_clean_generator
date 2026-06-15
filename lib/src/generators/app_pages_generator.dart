@@ -121,11 +121,15 @@ String _updateExistingAppPagesFile(
   int pagesEndIndex = -1;
 
   for (int i = 0; i < resultLines.length; i++) {
-    if (resultLines[i].contains('static List<GetPage> get pages')) {
+    final line = resultLines[i];
+    if (line.contains('static List<GetPage> get pages')) {
       pagesStartIndex = i;
-    }
-    // Find the end of the block (];)
-    if (pagesStartIndex != -1 && resultLines[i].trim().endsWith('];')) {
+      // Handle single line case: static List<GetPage> get pages => [];
+      if (line.trim().endsWith('];')) {
+        pagesEndIndex = i;
+        break;
+      }
+    } else if (pagesStartIndex != -1 && line.trim().endsWith('];')) {
       pagesEndIndex = i;
       break;
     }
@@ -142,9 +146,21 @@ String _updateExistingAppPagesFile(
     }
 
     if (!routeExists) {
-      // Add the new variable before the "];" line
-      final insertLine = '    ...$routesVariableName,';
-      resultLines.insert(pagesEndIndex, insertLine);
+      if (pagesStartIndex == pagesEndIndex) {
+        // Special case: single line '=> [];' or '=> [ ... ];'
+        final line = resultLines[pagesStartIndex];
+        if (line.contains('[]')) {
+          resultLines[pagesStartIndex] =
+              line.replaceFirst('[]', '[\n    ...$routesVariableName,\n  ]');
+        } else if (line.contains('[') && line.contains(']')) {
+          resultLines[pagesStartIndex] =
+              line.replaceFirst(']', '\n    ...$routesVariableName,\n  ]');
+        }
+      } else {
+        // Multi-line list: Add the new variable before the last "];" line
+        final insertLine = '    ...$routesVariableName,';
+        resultLines.insert(pagesEndIndex, insertLine);
+      }
     }
   }
 

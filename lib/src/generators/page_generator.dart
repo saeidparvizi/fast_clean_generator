@@ -13,7 +13,8 @@ String generateListScreen({
   final pluralPascalModel = pluralize(pascalModel);
   final pluralSnakeModel = toSnakeFromName(pluralPascalModel);
 
-  final idField = identifyIdField(jsonSchema);
+  final idField = identifyIdField(jsonSchema, className);
+  final camelIdField = toCamel(idField);
 
   final buffer = StringBuffer();
 
@@ -92,8 +93,8 @@ String generateListScreen({
   buffer.writeln(
       '                margin: const EdgeInsets.symmetric(vertical: 4),');
   buffer.writeln('                child: ListTile(');
-  buffer
-      .writeln('                  title: Text(\'#\${$snakeModel.$idField}\'),');
+  buffer.writeln(
+      '                  title: Text(\'#\${$snakeModel.$camelIdField}\'),');
   buffer.writeln('                  subtitle: Text($snakeModel.toString()),');
   buffer.writeln('                  trailing: Row(');
   buffer.writeln('                    mainAxisSize: MainAxisSize.min,');
@@ -104,7 +105,7 @@ String generateListScreen({
     buffer
         .writeln('                        icon: const Icon(Icons.visibility),');
     buffer.writeln(
-      '                        onPressed: () => Get.toNamed(AppRoutes.$snakeModel, parameters: {\'id\': $snakeModel.$idField.toString()}),',
+      '                        onPressed: () => Get.toNamed(AppRoutes.$snakeModel, parameters: {\'id\': $snakeModel.$camelIdField.toString()}),',
     );
     buffer.writeln('                      ),');
   }
@@ -113,7 +114,7 @@ String generateListScreen({
     buffer.writeln('                      IconButton(');
     buffer.writeln('                        icon: const Icon(Icons.edit),');
     buffer.writeln(
-      '                        onPressed: () => Get.toNamed(AppRoutes.${snakeModel}Edit, parameters: {\'id\': $snakeModel.$idField.toString()}),',
+      '                        onPressed: () => Get.toNamed(AppRoutes.${snakeModel}Edit, parameters: {\'id\': $snakeModel.$camelIdField.toString()}),',
     );
     buffer.writeln('                      ),');
   }
@@ -123,7 +124,7 @@ String generateListScreen({
     buffer.writeln(
         '                        icon: const Icon(Icons.delete, color: Colors.red),');
     buffer.writeln(
-      '                        onPressed: () => showDelete${pascalModel}Dialog(context, $snakeModel.$idField, $snakeModel.toString()),',
+      '                        onPressed: () => showDelete${pascalModel}Dialog(context, $snakeModel.$camelIdField, $snakeModel.toString()),',
     );
     buffer.writeln('                      ),');
   }

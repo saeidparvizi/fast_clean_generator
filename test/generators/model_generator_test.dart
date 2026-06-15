@@ -117,10 +117,12 @@ void main() {
         fileBase: {},
       );
 
-      // Verify toJson calls for children
-      expect(result, contains("'author': author?.toJson(),"));
-      expect(result,
-          contains("'comments': comments?.map((e) => e.toJson()).toList(),"));
+      // Verify toJson calls for children with proper casting
+      expect(result, contains("'author': (author as AuthorModel?)?.toJson(),"));
+      expect(
+          result,
+          contains(
+              "'comments': comments?.map((e) => (e as CommentsModel).toJson()).toList(),"));
     });
 
     test('generateModel handles primitive lists in fromJson and toJson', () {
