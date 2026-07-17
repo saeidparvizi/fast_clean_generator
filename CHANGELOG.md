@@ -1,3 +1,8 @@
+## 1.2.6
+
+- **Extended IDE Compatibility**: Updated `until-build` to support IntelliJ/Android Studio 2026.2 (build 262+) and 2026.3.
+- **Version Bump**: Synced CLI and IDE plugin versions to 1.2.6.
+
 ## 1.2.5
 
 - **Full Deprecation Fix**: Replaced `ProcessAdapter` with `ProcessListener` and `basePath` with `guessProjectDir()`.
